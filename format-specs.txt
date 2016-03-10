@@ -1,0 +1,37 @@
+{
+	"input": [
+		{ "type":"stdin" },
+		{ "type":"web-service", "port":"8080", "address":"0.0.0.0" }
+	],
+	"processing": [
+		{
+			"type":"regex",
+			"regex":"(<foo>)()(</foo>)",
+			"mapping": "{ \"name\":\"(2)\"}"
+		}
+	],
+	"output": [
+		{ "type":"file",
+		  "path":"./output.json" }
+	]
+}
+
+input:
+	stdin:
+		type: stdin
+
+	web-service:
+		type: "web-service"
+		port: 8080
+		address: "0.0.0.0"
+
+processing:
+	foo:
+		type: "regex"
+		regex: "(<foo>)(.*)(</foo>)"
+		mapping: "{ \"foo\": \"(2)\" }"
+
+output:
+	file:
+		type: "file"
+		path: "./output.json"
