@@ -32,7 +32,6 @@ func NewFileInput(path string) FileInput {
 	file_scanner := bufio.NewScanner(file)
 	fin := FileInput{
 		scanner: *file_scanner,
-		line_number: int(0),
 		abs_path: abs_path,
 		file: file,
 	}
@@ -53,7 +52,7 @@ func (input FileInput) ReadLine() string {
 		log.Fatal("No Tokens Left")
 	}
 
-	input.line_number += 1
+	input.line_number = 0
 	return input.scanner.Text()
 }
 

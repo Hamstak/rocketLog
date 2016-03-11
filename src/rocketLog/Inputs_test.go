@@ -16,20 +16,21 @@ func TestMain(m *testing.M){
 func TestFileRead(t *testing.T) {
 	input := NewFileInput("./testfiles/input.txt")
 
-	var line string
-	for input.HasLine(){
-		line = input.ReadLine()
-		fmt.Print(line)
-	}
+	log.Print(input.line_number)
+	line := input.ReadLine()
+	log.Print(line)
+	log.Print(input.line_number)
 
 	expected := "192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] \"GET /index.html HTTP/1.1\" 304 - \"http://192.168.99.101:32773/\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36\""
 
 	if(strings.Compare(line, expected) != 0){
+		log.Print(input)
 		t.Error("<<" + line + ">> != <<" + expected + ">>")
 	}
 
-	if(input.line_number != 7){
-		t.Error( fmt.Sprintf("Line Number: %d != 1", input.line_number))
+	expected_line_number := 1
+	if(input.line_number != expected_line_number){
+		t.Error( fmt.Sprintf("Line Number: %d != %d", input.line_number, expected_line_number))
 	}
 
 	input.Close()
@@ -52,4 +53,3 @@ func TestSaveLoadState(t *testing.T){
 
 	defer os.Remove(STATE_FILE)
 }
-
