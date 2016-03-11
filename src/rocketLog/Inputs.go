@@ -18,7 +18,7 @@ type FileInput struct {
 }
 
 
-func NewFileInput(path string) FileInput {
+func NewFileInput(path string) *FileInput {
 	file, err := os.Open(path)
 	if(err != nil){
 		log.Fatal(err)
@@ -30,34 +30,44 @@ func NewFileInput(path string) FileInput {
 	}
 
 	file_scanner := bufio.NewScanner(file)
-	fin := FileInput{
+	fin := &FileInput{
 		scanner: *file_scanner,
 		abs_path: abs_path,
 		file: file,
 	}
 
+	file_state := fin.loadState()
+
+	fin.SkipTo(file_state[fin.abs_path])
+
 	return fin
 }
 
-func (input FileInput) Close() {
-	input.file.Close()
+func (input *FileInput) SkipTo(skip_to int){
+	for input.line_number < skip_to {
+		log.Print("Current Line: ", input.ReadLine(), ", Input.line_number, ", input.line_number, " skip_to, ", skip_to)
+	}
 }
 
-func (input FileInput) HasLine() bool {
+func (input *FileInput) Close() {
+	input.file.Close()
+	input.saveState()
+}
+
+func (input *FileInput) HasLine() bool {
 	return input.scanner.Scan()
 }
 
-func (input FileInput) ReadLine() string {
+func (input *FileInput) ReadLine() string {
 	if (input.scanner.Scan() == false){
 		log.Fatal("No Tokens Left")
 	}
-
-	input.line_number = 0
+	input.line_number++
 	return input.scanner.Text()
 }
 
-func (input FileInput) SaveState(){
-	file_map := input.LoadState()
+func (input *FileInput) saveState(){
+	file_map := input.loadState()
 	file_map[input.abs_path] = input.line_number
 
 	file, err := os.OpenFile(STATE_FILE, os.O_RDWR | os.O_TRUNC, 0666)
@@ -74,7 +84,7 @@ func (input FileInput) SaveState(){
 	file.Close()
 }
 
-func (input FileInput) LoadState() map[string] int {
+func (input *FileInput) loadState() map[string] int{
 	var file *os.File
 	var err error
 
@@ -82,12 +92,11 @@ func (input FileInput) LoadState() map[string] int {
 	if(err != nil){
 		log.Fatal(err)
 	}
+	defer file.Close()
 
 	decoder := json.NewDecoder(file)
 	file_state := make(map[string]int)
 	decoder.Decode(&file_state)
-
-	file.Close()
 	return file_state
 }
 

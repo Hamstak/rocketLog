@@ -10,18 +10,18 @@ import (
 
 func TestMain(m *testing.M){
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	os.Exit(m.Run())
+	ret := m.Run()
+	os.Exit(ret)
 }
 
 func TestFileRead(t *testing.T) {
+	os.Remove(STATE_FILE)
+
 	input := NewFileInput("./testfiles/input.txt")
+	defer input.Close()
 
-	log.Print(input.line_number)
 	line := input.ReadLine()
-	log.Print(line)
-	log.Print(input.line_number)
-
-	expected := "192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] \"GET /index.html HTTP/1.1\" 304 - \"http://192.168.99.101:32773/\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36\""
+	expected := "line-1"
 
 	if(strings.Compare(line, expected) != 0){
 		log.Print(input)
@@ -32,24 +32,44 @@ func TestFileRead(t *testing.T) {
 	if(input.line_number != expected_line_number){
 		t.Error( fmt.Sprintf("Line Number: %d != %d", input.line_number, expected_line_number))
 	}
-
-	input.Close()
+	os.Remove(STATE_FILE)
 }
 
 func TestSaveLoadState(t *testing.T){
+	os.Remove(STATE_FILE)
+
 	input := NewFileInput("./testfiles/input.txt")
+	defer input.Close()
 	input.line_number = 47
-	input.SaveState()
+	input.saveState()
 
 	input2 := NewFileInput("./testfiles/input.txt")
-	input2.LoadState()
+	defer input2.Close()
+	input2.loadState()
 
 	if(input2.line_number != input.line_number){
 		t.Error( fmt.Sprintf("Input1 %d != Input2 %d", input.line_number, input2.line_number))
 	}
+	os.Remove(STATE_FILE)
+}
+
+func TestResumingLines(t *testing.T){
+	os.Remove(STATE_FILE)
+	input := NewFileInput("./testfiles/input.txt")
+
+	line1 := input.ReadLine()
+	line2 := input.ReadLine()
+
+	if(strings.Compare(line1, "line-1") != 0 || strings.Compare(line2, "line-2") != 0){
+		t.Error("Input was not as expected")
+	}
 
 	input.Close()
-	input2.Close()
 
-	defer os.Remove(STATE_FILE)
+	input = NewFileInput("./testfiles/input.txt")
+	expected := 2
+	if(input.line_number != expected){
+		t.Error("Expected Line Number:", expected, "Got:", input.line_number)
+	}
+	os.Remove(STATE_FILE)
 }
