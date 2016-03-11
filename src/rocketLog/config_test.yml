@@ -1,0 +1,16 @@
+input:
+  file:
+  - file: stdin
+  webservice:
+  - port: "0000"
+    address: 0.0.0.0
+processing:
+  regex:
+  - regex: ^(this)*
+    mapping: (1) thing
+output:
+  file:
+  - file: stdout
+  webservice:
+  - port: "0000"
+    address: 0.0.0.0

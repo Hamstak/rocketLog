@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"log"
+)
 
 func TestXMLDetection(t *testing.T){
 	e := eventFactory("<s></s>")
@@ -25,7 +28,8 @@ func TestRAWDetection(t *testing.T){
 
 func TestConfigurationInput(t *testing.T){
 	e:= readConfiguration()
-	if(e.webservice != "something"){
+	log.Print(e)
+	if(e.Input.File[0].File == "stdin"){
 		t.Error("Some read error")
 	}
 }
