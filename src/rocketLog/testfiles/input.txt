@@ -1,0 +1,7 @@
+192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] "GET /index.html HTTP/1.1" 304 - "http://192.168.99.101:32773/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
+192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] "GET /index.html HTTP/1.1" 304 - "http://192.168.99.101:32773/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
+192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] "GET /index.html HTTP/1.1" 304 - "http://192.168.99.101:32773/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
+192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] "GET /index.html HTTP/1.1" 304 - "http://192.168.99.101:32773/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
+192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] "GET /index.html HTTP/1.1" 304 - "http://192.168.99.101:32773/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
+192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] "GET /index.html HTTP/1.1" 304 - "http://192.168.99.101:32773/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
+192.168.99.1 - - [11/Mar/2016:06:05:42 +0000] "GET /index.html HTTP/1.1" 304 - "http://192.168.99.101:32773/" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36"
