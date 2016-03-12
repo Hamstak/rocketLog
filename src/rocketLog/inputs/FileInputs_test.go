@@ -1,4 +1,4 @@
-package main
+package inputs;
 
 import (
 	"testing"
@@ -14,17 +14,24 @@ func TestMain(m *testing.M){
 	os.Exit(ret)
 }
 
+
+func tryDelete(filename string){
+	err := os.Remove(filename)
+	if(err != nil){
+		log.Print(err)
+	}
+}
+
 func TestFileRead(t *testing.T) {
-	os.Remove(STATE_FILE)
-
-	input := NewFileInput("./testfiles/input.txt")
-	defer input.Close()
-
+	state_file := "./testfiles/test-file-read.json"
+	tryDelete(state_file)
+	
+	input := NewFileInputWithState("./testfiles/input.txt", state_file)
+	
 	line := input.ReadLine()
 	expected := "line-1"
 
 	if(strings.Compare(line, expected) != 0){
-		log.Print(input)
 		t.Error("<<" + line + ">> != <<" + expected + ">>")
 	}
 
@@ -32,30 +39,35 @@ func TestFileRead(t *testing.T) {
 	if(input.line_number != expected_line_number){
 		t.Error( fmt.Sprintf("Line Number: %d != %d", input.line_number, expected_line_number))
 	}
-	os.Remove(STATE_FILE)
+
+	input.Close()
+	tryDelete(state_file)
 }
 
 func TestSaveLoadState(t *testing.T){
-	os.Remove(STATE_FILE)
+	state_file := "./testfiles/test-save-load-state.json"
+	tryDelete(state_file)
 
-	input := NewFileInput("./testfiles/input.txt")
-	defer input.Close()
-	input.line_number = 47
-	input.saveState()
+	input := NewFileInputWithState("./testfiles/input.txt", state_file)
+	input.line_number = 3
+	input.Close()
 
-	input2 := NewFileInput("./testfiles/input.txt")
-	defer input2.Close()
+	input2 := NewFileInputWithState("./testfiles/input.txt", state_file)
 	input2.loadState()
+	input2.Close()
 
 	if(input2.line_number != input.line_number){
 		t.Error( fmt.Sprintf("Input1 %d != Input2 %d", input.line_number, input2.line_number))
 	}
-	os.Remove(STATE_FILE)
+	tryDelete(state_file)
 }
 
 func TestResumingLines(t *testing.T){
-	os.Remove(STATE_FILE)
-	input := NewFileInput("./testfiles/input.txt")
+	state_file := "./testfiles/test-resuming-lines.json"
+	tryDelete(state_file)
+
+	// Read some code and then save the state
+	input := NewFileInputWithState("./testfiles/input.txt", state_file)
 
 	line1 := input.ReadLine()
 	line2 := input.ReadLine()
@@ -66,10 +78,12 @@ func TestResumingLines(t *testing.T){
 
 	input.Close()
 
-	input = NewFileInput("./testfiles/input.txt")
+	// Load the file state
+	input = NewFileInputWithState("./testfiles/input.txt", state_file)
 	expected := 2
 	if(input.line_number != expected){
 		t.Error("Expected Line Number:", expected, "Got:", input.line_number)
 	}
-	os.Remove(STATE_FILE)
+
+	tryDelete(state_file)
 }

@@ -1,4 +1,4 @@
-package main
+package inputs
 
 import (
 	"bufio"
@@ -8,17 +8,19 @@ import (
 	"path/filepath"
 )
 
-const STATE_FILE = "./state.json"
-
 type FileInput struct {
-	scanner     bufio.Scanner
-	line_number int
-	abs_path    string
-	file *os.File
+	scanner		bufio.Scanner
+	line_number	int
+	abs_path	string
+	state_file	string
+	file		*os.File
 }
 
-
 func NewFileInput(path string) *FileInput {
+	return NewFileInputWithState(path, "./state.json")
+}
+
+func NewFileInputWithState(path, state_file string) *FileInput{
 	file, err := os.Open(path)
 	if(err != nil){
 		log.Fatal(err)
@@ -34,10 +36,10 @@ func NewFileInput(path string) *FileInput {
 		scanner: *file_scanner,
 		abs_path: abs_path,
 		file: file,
+		state_file: state_file,
 	}
 
 	file_state := fin.loadState()
-
 	fin.SkipTo(file_state[fin.abs_path])
 
 	return fin
@@ -45,7 +47,7 @@ func NewFileInput(path string) *FileInput {
 
 func (input *FileInput) SkipTo(skip_to int){
 	for input.line_number < skip_to {
-		log.Print("Current Line: ", input.ReadLine(), ", Input.line_number, ", input.line_number, " skip_to, ", skip_to)
+		input.ReadLine()
 	}
 }
 
@@ -70,7 +72,7 @@ func (input *FileInput) saveState(){
 	file_map := input.loadState()
 	file_map[input.abs_path] = input.line_number
 
-	file, err := os.OpenFile(STATE_FILE, os.O_RDWR | os.O_TRUNC, 0666)
+	file, err := os.OpenFile(input.state_file, os.O_RDWR | os.O_TRUNC, 0666)
 	if(err != nil){
 		log.Fatal(err)
 	}
@@ -88,7 +90,7 @@ func (input *FileInput) loadState() map[string] int{
 	var file *os.File
 	var err error
 
-	file, err = os.OpenFile(STATE_FILE, os.O_CREATE | os.O_RDWR, 0666)
+	file, err = os.OpenFile(input.state_file, os.O_CREATE | os.O_RDWR, 0666)
 	if(err != nil){
 		log.Fatal(err)
 	}
@@ -99,4 +101,3 @@ func (input *FileInput) loadState() map[string] int{
 	decoder.Decode(&file_state)
 	return file_state
 }
-
