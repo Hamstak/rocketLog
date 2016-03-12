@@ -29,7 +29,7 @@ func TestRAWDetection(t *testing.T){
 func TestConfigurationInput(t *testing.T){
 	e:= readConfiguration()
 	log.Print(e)
-	if(e.Input.File[0].File == "stdin"){
-		t.Error("Some read error")
+	if (e == nil){
+		t.Error("Data failure")
 	}
 }
