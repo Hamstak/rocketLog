@@ -13,17 +13,21 @@ type Configuration struct{
 }
 
 type ioInstance struct {
+	Index string
 	File []FileInstance
 	Webservice []WebserviceInstance
 }
 
 type FileInstance struct {
 	File string
+	Index string 	`omitempty`
 }
 
 type WebserviceInstance struct  {
 	Port string
 	Address string
+	Index string `omitempty`
+	portAddress string
 }
 
 type ProcessingInstance struct {
@@ -35,7 +39,7 @@ type RegexInstance struct {
 	Mapping string
 }
 
-func readConfiguration() interface{}{
+func ReadConfiguration() interface{}{
 	config := &Configuration{}
 
 	dat, err := ioutil.ReadFile("testfiles/config.yml")
@@ -47,6 +51,10 @@ func readConfiguration() interface{}{
 	if(err != nil){
 		panic(err)
 	}
-	log.Print(config)
+
+	for i := 0; i < len(config.Input.Webservice); i++{
+		config.Input.Webservice[i] = "https://" + config.Input.Webservice[i].Address + ":" + config.Input.Webservice[i].Port + "/"
+	}
+	
 	return config
 }

@@ -27,7 +27,7 @@ func TestRAWDetection(t *testing.T){
 }
 
 func TestConfigurationInput(t *testing.T){
-	e:= readConfiguration()
+	e:= ReadConfiguration()
 	log.Print(e)
 	if (e == nil){
 		t.Error("Data failure")
