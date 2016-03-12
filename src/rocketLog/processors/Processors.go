@@ -1,6 +1,6 @@
 package processors
 
 type Processor interface {
-	Modify(string) string
+	Process(string) string
 }
 

@@ -5,10 +5,10 @@ import (
 	"os"
 )
 
-func Test_FileOuput_FileWrite(t *testing.T) {
+func Test_NetOuput_Write(t *testing.T) {
 	file_name := "./testfiles/output.txt"
-	var output Output
 
+	var output Output
 	output = NewFileOutput(file_name)
 	output.Write("Hello World!")
 	output.Write("SecondLine")
