@@ -16,11 +16,7 @@ type FileInput struct {
 	file		*os.File
 }
 
-func NewFileInput(path string) *FileInput {
-	return NewFileInputWithState(path, "./state.json")
-}
-
-func NewFileInputWithState(path, state_file string) *FileInput{
+func NewFileInput(path, state_file string) *FileInput{
 	file, err := os.Open(path)
 	if(err != nil){
 		log.Fatal(err)
@@ -54,10 +50,6 @@ func (input *FileInput) SkipTo(skip_to int){
 func (input *FileInput) Close() {
 	input.file.Close()
 	input.saveState()
-}
-
-func (input *FileInput) HasLine() bool {
-	return input.scanner.Scan()
 }
 
 func (input *FileInput) ReadLine() string {
