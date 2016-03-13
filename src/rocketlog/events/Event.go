@@ -1,4 +1,4 @@
-package rocketLog
+package event
 
 import (
 	"strings"

@@ -4,7 +4,7 @@ import (
 	"os"
 	"log"
 	"bufio"
-	"rocketLog"
+	"rocketlog/events"
 )
 
 type FileOutput struct {
@@ -31,7 +31,7 @@ func NewFileOutput(file_name string) *FileOutput {
 	return file_output
 }
 
-func (self *FileOutput) Write(event *rocketLog.Event){
+func (self *FileOutput) Write(event *event.Event){
 	line := event.Data
 
 	_, err := self.writer.WriteString(line)

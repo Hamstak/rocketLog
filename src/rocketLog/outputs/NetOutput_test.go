@@ -4,7 +4,7 @@ import (
 	"testing"
 	"os"
 	"os/exec"
-	"rocketLog"
+	"rocketlog/events"
 	"time"
 	"net/http"
 	"log"
@@ -53,7 +53,7 @@ func Test_NetOuput_Write(t *testing.T) {
 
 	var output Output
 	output = NewNetOutput("http://elasticsearch:9200")
-	output.Write(rocketLog.NewEvent("{ \"Foo\":\"Bar\" }", "TEST", "test-index"))
+	output.Write(event.NewEvent("{ \"Foo\":\"Bar\" }", "TEST", "test-index"))
 	output.Close()
 
 	stopElasticSearch(t)

@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"gopkg.in/yaml.v2"
@@ -7,26 +7,31 @@ import (
 )
 
 type Configuration struct{
-	Input ioInstance
+	Input      InputInstance
 	Processing ProcessingInstance
-	Output ioInstance
+	Output     OutputInstance
 }
 
-type ioInstance struct {
-	File []FileInstance
+type InputInstance struct {
+	File []FileInputInstance
+}
+
+type OutputInstance struct {
+	File []FileOutputInstance
 	Webservice []WebserviceInstance
 }
 
-type FileInstance struct {
+type FileInputInstance struct {
 	File string
 	Type string
 }
 
+type FileOutputInstance struct {
+	File string
+}
+
 type WebserviceInstance struct  {
-	Port string
-	Address string
-	Type string
-	portAddress string
+	Url string
 }
 
 type ProcessingInstance struct {
@@ -38,7 +43,7 @@ type RegexInstance struct {
 	Mapping string
 }
 
-func ReadConfiguration(fileName string) (*Configuration, error){
+func NewConfiguration(fileName string) (*Configuration, error){
 	config := &Configuration{}
 	var err error
 
@@ -53,10 +58,6 @@ func ReadConfiguration(fileName string) (*Configuration, error){
 		panic(err)
 	}
 
-	for i := 0; i < len(config.Input.Webservice); i++{
-		config.Input.Webservice[i].portAddress = "https://" + config.Input.Webservice[i].Address + ":" + config.Input.Webservice[i].Port + "/"
-	}
-
 	err = errorHandle(config)
 
 	return config, err
@@ -65,9 +66,9 @@ func ReadConfiguration(fileName string) (*Configuration, error){
 func errorHandle(config *Configuration) error{
 	var err error
 	err = nil
-	if ((len(config.Input.Webservice) == 0 && len(config.Input.File) == 0 )&& (len(config.Output.File) == 0 && len(config.Output.Webservice) == 0)){
+	if ((len(config.Input.File) == 0 ) && (len(config.Output.File) == 0 && len(config.Output.Webservice) == 0)){
 		err = errors.New("No valid inputs or outputs detected in definition of configuration file")
-	}else if(len(config.Input.Webservice) == 0 && len(config.Input.File) == 0){
+	}else if(len(config.Input.File) == 0){
 		err = errors.New("No valid inputs detected in definition of configuration file")
 	}else if(len(config.Output.File) == 0 && len(config.Output.Webservice) == 0){
 		err = errors.New("No valid outpits detected in definition of configuration file")

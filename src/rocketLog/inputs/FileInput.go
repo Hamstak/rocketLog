@@ -56,10 +56,13 @@ func (input *FileInput) Close() {
 func (input *FileInput) ReadLine() (string, error) {
 	var err error
 	err = nil
+
 	if (input.scanner.Scan() == false){
 		err = errors.New("No tokens left")
+	} else {
+		input.line_number++
 	}
-	input.line_number++
+
 	return input.scanner.Text(), err
 }
 

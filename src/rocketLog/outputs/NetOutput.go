@@ -3,10 +3,10 @@ package outputs
 import (
 	"net/http"
 	"log"
-	"rocketLog"
 	"encoding/json"
 	"io/ioutil"
 	"strings"
+	"rocketlog/events"
 )
 
 type NetOutput struct{
@@ -25,7 +25,7 @@ func NewNetOutput(hostname string) *NetOutput{
 	return net_output
 }
 
-func (self *NetOutput) getEndpoint(event *rocketLog.Event) string {
+func (self *NetOutput) getEndpoint(event *event.Event) string {
 	return self.hostname + "/" + ELASTIC_INDEX + "/" + event.Index + "/"
 }
 
@@ -41,7 +41,7 @@ func isValidJSON(payload string) bool{
 	return true
 }
 
-func (self *NetOutput) Write(event *rocketLog.Event) {
+func (self *NetOutput) Write(event *event.Event) {
 	if(!isValidJSON(event.Data)){
 		log.Print("Couldn't Post Data For ", event)
 		return

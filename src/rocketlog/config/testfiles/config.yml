@@ -1,0 +1,17 @@
+input:
+  file:
+  - file: "./input.txt"
+    type: "input-file"
+processing:
+  regex:
+  - regex: "^(this)*"
+    mapping: "(1) thing"
+  - regex: "^(foo)*"
+    mapping: "(1)(1)"
+output:
+  file:
+  - file: "./output.txt"
+  - file: "./output2.txt"
+  webservice:
+  - url: "http://127.0.0.1:9200"
+  - url: "http://127.0.0.1:9201"

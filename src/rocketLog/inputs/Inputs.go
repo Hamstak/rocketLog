@@ -1,6 +1,6 @@
 package inputs
 
 type Input interface {
-	ReadLine() string
+	ReadLine() (string, error)
 	Close()
 }

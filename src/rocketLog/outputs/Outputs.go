@@ -1,8 +1,8 @@
 package outputs
 
-import "rocketLog"
+import "rocketlog/events"
 
 type Output interface {
-	Write(data *rocketLog.Event)
+	Write(data *event.Event)
 	Close()
 }
