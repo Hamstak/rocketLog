@@ -2,7 +2,6 @@ package main
 
 import (
 	"testing"
-	"log"
 )
 
 func TestXMLDetection(t *testing.T){
@@ -26,10 +25,13 @@ func TestRAWDetection(t *testing.T){
 	}
 }
 
-func TestConfigurationInput(t *testing.T){
-	e:= ReadConfiguration()
-	log.Print(e)
-	if (e == nil){
-		t.Error("Data failure")
+func TestConfigurationInputGeneral(t *testing.T){
+	c, err := ReadConfiguration("testfiles/config.yml")
+	if( err != nil){
+		panic(err)
+	}
+	if (c.Input.Webservice[0].portAddress != "https://0.0.0.0:0000/"){
+		t.Error("Baking failure")
 	}
 }
+

@@ -1,11 +1,11 @@
 input:
   file:
   - file: stdin
-    index: stdin
+    type: stdin
   webservice:
   - port: "0000"
     address: 0.0.0.0
-    index: default
+    type: default
 processing:
   regex:
   - regex: ^(this)*

@@ -3,7 +3,7 @@ package main
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
+	"errors"
 )
 
 type Configuration struct{
@@ -13,20 +13,19 @@ type Configuration struct{
 }
 
 type ioInstance struct {
-	Index string
 	File []FileInstance
 	Webservice []WebserviceInstance
 }
 
 type FileInstance struct {
 	File string
-	Index string 	`omitempty`
+	Type string
 }
 
 type WebserviceInstance struct  {
 	Port string
 	Address string
-	Index string `omitempty`
+	Type string
 	portAddress string
 }
 
@@ -39,10 +38,12 @@ type RegexInstance struct {
 	Mapping string
 }
 
-func ReadConfiguration() interface{}{
+func ReadConfiguration(fileName string) (*Configuration, error){
 	config := &Configuration{}
+	var err error
 
-	dat, err := ioutil.ReadFile("testfiles/config.yml")
+
+	dat, err := ioutil.ReadFile(fileName)
 	if(err != nil){
 		panic(err)
 	}
@@ -53,8 +54,24 @@ func ReadConfiguration() interface{}{
 	}
 
 	for i := 0; i < len(config.Input.Webservice); i++{
-		config.Input.Webservice[i] = "https://" + config.Input.Webservice[i].Address + ":" + config.Input.Webservice[i].Port + "/"
+		config.Input.Webservice[i].portAddress = "https://" + config.Input.Webservice[i].Address + ":" + config.Input.Webservice[i].Port + "/"
 	}
-	
-	return config
+
+	err = errorHandle(config)
+
+	return config, err
+}
+
+func errorHandle(config *Configuration) error{
+	var err error
+	err = nil
+	if ((len(config.Input.Webservice) == 0 && len(config.Input.File) == 0 )&& (len(config.Output.File) == 0 && len(config.Output.Webservice) == 0)){
+		err = errors.New("No valid inputs or outputs detected in definition of configuration file")
+	}else if(len(config.Input.Webservice) == 0 && len(config.Input.File) == 0){
+		err = errors.New("No valid inputs detected in definition of configuration file")
+	}else if(len(config.Output.File) == 0 && len(config.Output.Webservice) == 0){
+		err = errors.New("No valid outpits detected in definition of configuration file")
+	}
+
+	return err
 }
