@@ -8,8 +8,8 @@ import (
 	"os/exec"
 )
 
-const MAPPING_REGEX = "(\\([0-9]*\\))"
-const SHELL_REGEX = "(`.*`)"
+const MAPPING_REGEX = "(\\(([0-9]*)\\))"
+const SHELL_REGEX = "(`(.*)`)"
 
 type RegexProcessor struct {
 	regex         *regexp.Regexp
@@ -42,8 +42,9 @@ func (self *RegexProcessor) Process(input string) string {
 	output := self.mapping
 
 	for _, v := range mapping_result {
-		current_mapping_token := v[0]
-		result_index, err := strconv.Atoi(v[1][1:len(v[1]) - 1])
+		log.Print(v)
+		current_mapping_token := v[1]
+		result_index, err := strconv.Atoi(v[2])
 		if(err != nil){
 			log.Fatal(err)
 		}
@@ -54,8 +55,9 @@ func (self *RegexProcessor) Process(input string) string {
 	}
 
 	for _, v:= range shell_result{
+		log.Print(v)
 		current_mapping_token := v[0]
-		cmd_slices := strings.Split(v[1][1:len(v[1])-1], " ")
+		cmd_slices := strings.Split(v[2], " ")
 
 		byte_stream, err := exec.Command(cmd_slices[0], cmd_slices[1:]...).Output()
 		if(err != nil){
