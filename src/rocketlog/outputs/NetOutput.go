@@ -7,11 +7,13 @@ import (
 	"io/ioutil"
 	"strings"
 	"rocketlog/events"
+	"sync"
 )
 
 type NetOutput struct{
 	hostname string
 	client http.Client
+	lock sync.Mutex
 }
 
 const ELASTIC_INDEX = "rocketlog"
@@ -46,6 +48,9 @@ func (self *NetOutput) Write(event *event.Event) {
 		log.Print("Couldn't Post Data For ", event)
 		return
 	}
+
+	self.lock.Lock()
+	defer self.lock.Unlock()
 
 	payload := strings.NewReader(event.Data)
 	endpoint := self.getEndpoint(event)

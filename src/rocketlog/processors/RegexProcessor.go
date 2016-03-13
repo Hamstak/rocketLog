@@ -28,6 +28,10 @@ func NewRegexProcessor(parser_regex, mapping string) *RegexProcessor{
 	return reg
 }
 
+func (self *RegexProcessor) Matches(input string) bool {
+	return self.regex.MatchString(input)
+}
+
 func (self *RegexProcessor) Process(input string) string {
 	result := self.regex.FindStringSubmatch(input)
 	mapping_result := self.mapping_regex.FindAllStringSubmatch(self.mapping, -1)
