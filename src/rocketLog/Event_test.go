@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestXMLDetection(t *testing.T){
 	e := eventFactory("<s></s>")
@@ -23,9 +25,13 @@ func TestRAWDetection(t *testing.T){
 	}
 }
 
-func TestConfigurationInput(t *testing.T){
-	e:= readConfiguration()
-	if(e.webservice != "something"){
-		t.Error("Some read error")
+func TestConfigurationInputGeneral(t *testing.T){
+	c, err := ReadConfiguration("testfiles/config.yml")
+	if( err != nil){
+		panic(err)
+	}
+	if (c.Input.Webservice[0].portAddress != "https://0.0.0.0:0000/"){
+		t.Error("Baking failure")
 	}
 }
+
