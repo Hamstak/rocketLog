@@ -51,10 +51,7 @@ func (self *RegexProcessor) Process(input string) string {
 
 func (self *RegexProcessor) generateResultToken(input[]string, result regexp.Regexp) string{
 	var current_result_token string
-	if bool, err :=regexp.MatchString("`.*`", input[0]); bool {
-		if (err != nil){
-			log.Fatal(err)
-		}
+	if (input[0][0] == '`') {
 		cmd_slices := strings.Split(input[1][1:len(input)], " ")
 		cmd_result, err := exec.Command(cmd_slices[0], cmd_slices[1:]...).Output()
 		if(err != nil){
