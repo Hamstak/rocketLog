@@ -1,4 +1,4 @@
-package main
+package rocketLog
 
 type configuration struct{
 	webservice string
