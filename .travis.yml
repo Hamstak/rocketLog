@@ -5,10 +5,6 @@ go:
 
 install: go get gopkg.in/yaml.v2
 
-go_import_path:
-- github.com/Hamstak/rocketLog/src/rocketlog
-- github.com/Hamstak/rocketLog/src/rocketlog/config
-- github.com/Hamstak/rocketLog/src/rocketlog/inputs
-- github.com/Hamstak/rocketLog/src/rocketlog/events
-- github.com/Hamstak/rocketLog/src/rocketlog/outputs
-- github.com/Hamstak/rocketLog/src/rocketlog/processors
+go_import_path: github.com/Hamstak/rocketLog/src/rocketlog
+
+script: ./test.sh
