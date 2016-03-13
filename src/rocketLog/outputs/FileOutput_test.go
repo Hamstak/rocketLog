@@ -3,6 +3,7 @@ package outputs
 import (
 	"testing"
 	"os"
+	"rocketLog"
 )
 
 func Test_FileOuput_FileWrite(t *testing.T) {
@@ -10,8 +11,10 @@ func Test_FileOuput_FileWrite(t *testing.T) {
 	var output Output
 
 	output = NewFileOutput(file_name)
-	output.Write("Hello World!")
-	output.Write("SecondLine")
+
+	event := rocketLog.NewEvent("Hello World!","Test-Producer", "Test-Index")
+	output.Write(event)
+
 	output.Close()
 
 	os.Remove(file_name)

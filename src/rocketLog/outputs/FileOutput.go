@@ -4,6 +4,7 @@ import (
 	"os"
 	"log"
 	"bufio"
+	"rocketLog"
 )
 
 type FileOutput struct {
@@ -19,17 +20,25 @@ func NewFileOutput(file_name string) *FileOutput {
 		log.Fatal(err)
 	}
 
+	writer := bufio.NewWriter(file)
+
 	file_output := &FileOutput{
 		file_name: file_name,
 		file: file,
-		writer: bufio.NewWriter(file),
+		writer: writer,
 	}
 
 	return file_output
 }
 
-func (self *FileOutput) Write(line string){
-	self.writer.WriteString(line)
+func (self *FileOutput) Write(event *rocketLog.Event){
+	line := event.Data
+
+	_, err := self.writer.WriteString(line)
+	if(err != nil){
+		log.Fatal(err)
+	}
+
 	self.writer.Flush()
 }
 

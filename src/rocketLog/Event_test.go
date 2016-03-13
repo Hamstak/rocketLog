@@ -1,26 +1,26 @@
-package main
+package rocketLog
 
 import (
 	"testing"
 )
 
 func TestXMLDetection(t *testing.T){
-	e := eventFactory("<s></s>")
-	if(e.dataType != XML){
+	e := NewEvent("<s></s>", "TEST", "TEST")
+	if(e.DataType != XML){
 		t.Error("Data Type Failure")
 	}
 }
 
 func TestJSONDetection(t *testing.T){
-	e:= eventFactory("{}")
-	if(e.dataType != JSON) {
+	e:= NewEvent("{}", "TEST", "TEST")
+	if(e.DataType != JSON) {
 		t.Error("Data Type Failure")
 	}
 }
 
 func TestRAWDetection(t *testing.T){
-	e := eventFactory("Some text")
-	if(e.dataType != RAW){
+	e := NewEvent("Some text", "TEST", "TEST")
+	if(e.DataType != RAW){
 		t.Error("Data Type Failure")
 	}
 }
