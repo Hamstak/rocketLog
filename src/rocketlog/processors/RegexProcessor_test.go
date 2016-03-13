@@ -19,12 +19,12 @@ func TestMain(m *testing.M){
 func Test_RegexProcessor_Process(t *testing.T) {
 	var processor Processor
 
-	processor = NewRegexProcessor("([a-zA-Z.]*) ([0-9]*)", "{ \"host\" : \"(1)\", \"port\" : \"(2)\",\"whoami\" : \"`whoami`\" }")
+	processor = NewRegexProcessor("([a-zA-Z.]*) ([0-9]*)", "{ \"host\" : \"(1)\", \"port\" : \"(2)\", \"whoami\" : \"`whoami`\" }")
 	output, err := exec.Command("whoami").Output()
 	if(err != nil){
 		log.Fatal(err)
 	}
-	whoami := string(output)
+	whoami := strings.Trim(string(output), "\n")
 	expected := "{ \"host\" : \"somerandomhost.com\", \"port\" : \"1234\", \"whoami\" : \"" + whoami +"\" }"
 	received := processor.Process("somerandomhost.com 1234 that isnt needed")
 	if(strings.Compare(received, expected) != 0){

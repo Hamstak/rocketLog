@@ -42,8 +42,8 @@ func (self *RegexProcessor) Process(input string) string {
 	output := self.mapping
 
 	for _, v := range mapping_result {
-		current_mapping_token := v[1]
-		result_index, err := strconv.Atoi(v[2])
+		current_mapping_token := v[0]
+		result_index, err := strconv.Atoi(v[1][1:len(v[1]) - 1])
 		if(err != nil){
 			log.Fatal(err)
 		}
@@ -54,13 +54,14 @@ func (self *RegexProcessor) Process(input string) string {
 	}
 
 	for _, v:= range shell_result{
-		current_mapping_token := v[1]
-		cmd_slices := strings.Split(v[2], " ")
+		current_mapping_token := v[0]
+		cmd_slices := strings.Split(v[1][1:len(v[1])-1], " ")
 
-		current_result_token, err := exec.Command(cmd_slices[0], cmd_slices[1:]...).Output()
+		byte_stream, err := exec.Command(cmd_slices[0], cmd_slices[1:]...).Output()
 		if(err != nil){
 			log.Fatal(err)
 		}
+		current_result_token := strings.Trim(string(byte_stream), "\n")
 		output = strings.Replace(output, current_mapping_token, current_result_token, -1)
 	}
 
