@@ -27,7 +27,10 @@ func Test_FileInput_FileRead(t *testing.T) {
 
 	input := NewFileInput("./testfiles/input.txt", state_file)
 	
-	line := input.ReadLine()
+	line, err := input.ReadLine()
+	if (err != nil){
+		log.Print("No tokens found")
+	}
 	expected := "line-1"
 
 	if(strings.Compare(line, expected) != 0){
@@ -68,8 +71,16 @@ func Test_FileInput_ResumingLines(t *testing.T){
 	// Read some code and then save the state
 	input := NewFileInput("./testfiles/input.txt", state_file)
 
-	line1 := input.ReadLine()
-	line2 := input.ReadLine()
+	line1, err1 := input.ReadLine()
+	line2, err2 := input.ReadLine()
+
+	if( err1 != nil){
+		log.Print(err1)
+	}
+
+	if(err2 != nil){
+		log.Print(err2)
+	}
 
 	if(strings.Compare(line1, "line-1") != 0 || strings.Compare(line2, "line-2") != 0){
 		t.Error("Input was not as expected")

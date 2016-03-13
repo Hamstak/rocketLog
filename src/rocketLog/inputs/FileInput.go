@@ -6,6 +6,7 @@ import (
 	"log"
 	"encoding/json"
 	"path/filepath"
+	"errors"
 )
 
 type FileInput struct {
@@ -52,12 +53,14 @@ func (input *FileInput) Close() {
 	input.saveState()
 }
 
-func (input *FileInput) ReadLine() string {
+func (input *FileInput) ReadLine() (string, error) {
+	var err error
+	err = nil
 	if (input.scanner.Scan() == false){
-		log.Fatal("No Tokens Left")
+		err = errors.New("No tokens left")
 	}
 	input.line_number++
-	return input.scanner.Text()
+	return input.scanner.Text(), err
 }
 
 func (input *FileInput) saveState(){
