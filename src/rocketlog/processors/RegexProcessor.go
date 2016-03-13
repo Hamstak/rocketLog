@@ -49,7 +49,7 @@ func (self *RegexProcessor) Process(input string) string {
 	return output
 }
 
-func (self *RegexProcessor) generateResultToken(input[]string, result regexp.Regexp) string{
+func (self *RegexProcessor) generateResultToken(input[]string, result []string) string{
 	var current_result_token string
 	if (input[0][0] == '`') {
 		cmd_slices := strings.Split(input[1][1:len(input)], " ")
