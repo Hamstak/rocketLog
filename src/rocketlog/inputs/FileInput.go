@@ -15,15 +15,16 @@ type FileInput struct {
 	abs_path	string
 	state_file	string
 	file		*os.File
+	elastic_type	string
 }
 
-func NewFileInput(path, state_file string) *FileInput{
-	file, err := os.Open(path)
+func NewFileInput(path, state_file, elastic_type string) *FileInput{
+	abs_path, err := filepath.Abs(path)
 	if(err != nil){
 		log.Fatal(err)
 	}
 
-	abs_path, err := filepath.Abs(path)
+	file, err := os.OpenFile(abs_path, os.O_RDONLY, 0666)
 	if(err != nil){
 		log.Fatal(err)
 	}
@@ -34,23 +35,54 @@ func NewFileInput(path, state_file string) *FileInput{
 		abs_path: abs_path,
 		file: file,
 		state_file: state_file,
+		elastic_type: elastic_type,
 	}
 
 	file_state := fin.loadState()
-	fin.SkipTo(file_state[fin.abs_path])
+	fin.skipTo(file_state[fin.abs_path])
 
 	return fin
 }
 
-func (input *FileInput) SkipTo(skip_to int){
+func (input *FileInput) skipTo(skip_to int) error{
 	for input.line_number < skip_to {
-		input.ReadLine()
+		_, err := input.ReadLine()
+		if(err != nil){
+			return err
+		}
 	}
+
+	return nil
+}
+
+func (self *FileInput) Flush(){
+	self.file.Close()
+	self.saveState()
+
+	var err error
+	self.file, err = os.OpenFile(self.abs_path, os.O_RDONLY, 0666)
+	if(err != nil){
+		log.Fatal(err)
+	}
+
+	last_line_number := self.line_number
+	self.line_number = 0
+	self.scanner = *bufio.NewScanner(self.file)
+
+	if(self.skipTo(last_line_number) != nil){
+		self.line_number = 0
+		self.Flush()
+	}
+
 }
 
 func (input *FileInput) Close() {
 	input.file.Close()
 	input.saveState()
+}
+
+func (self *FileInput) GetType() string {
+	return self.elastic_type
 }
 
 func (input *FileInput) ReadLine() (string, error) {
