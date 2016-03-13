@@ -7,6 +7,6 @@ install: go get gopkg.in/yaml.v2
 
 go_import_path: github.com/Hamstak/rocketLog/src/rocketlog
 
-sudo: required
+sudo: false
 
-script: sudo ./test.sh
+script: go test rocketlog/...
