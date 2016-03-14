@@ -1,7 +1,6 @@
 language: go
 go:
-- tip
+- 1.6
 
 install:
 - go get gopkg.in/yaml.v2
-- go get github.com/Hamstak/rocketLog/src/rocketlog/config
