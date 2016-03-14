@@ -1,0 +1,11 @@
+###################################
+#=============TODO================#
+###################################
+
+- Create a test.sh which gets and starts an elastisearch docker image so that all tests pass.
+
+
+- Get all the rest of the tests to pass
+
+
+- More to come
