@@ -3,7 +3,11 @@ language: go
 go:
 - tip
 
-install: go get gopkg.in/yaml.v2
+install:
+- go get gopkg.in/yaml.v2
+- cd $HOME/gopath/src/github.com/Hamstak/rocketLog
+
+script: go test rocketlog/...
 
 go_import_path: github.com/Hamstak/rocketLog/src/rocketlog
 
