@@ -61,7 +61,7 @@ func populate_rocket_instances(
 	rocket_outputs []outputs.Output){
 
 	for i, input_instance := range config_struct.Input.File {
-		rocket_inputs[i] = inputs.NewFileInput(input_instance.File, "state.json")
+		rocket_inputs[i] = inputs.NewFileInput(input_instance.File, "state.json", input_instance.Type)
 	}
 
 	for i, regex_instance := range config_struct.Processing.Regex {
