@@ -9,7 +9,7 @@ before_install:
 
 install:
 - go get gopkg.in/yaml.v2
-- "export GOPATH=$GOPATH:$HOME/gopath/src/github.com/Hamstak/rocketLog/src/rocketlog"
+- "export GOPATH=$GOPATH:$HOME/gopath/src/github.com/Hamstak/rocketLog/"
 
 script:
   - go test -coverprofile=coverage.txt -covermode=atomic ./...
