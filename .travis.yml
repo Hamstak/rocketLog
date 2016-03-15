@@ -2,6 +2,8 @@ language: go
 go:
 - 1.6
 
+sudo: required
+
 before_install:
   - go get github.com/onsi/gomega
   - go get github.com/onsi/ginkgo
@@ -12,7 +14,7 @@ install:
 - "export GOPATH=$GOPATH:$HOME/gopath/src/github.com/Hamstak/rocketLog/"
 
 script:
-  -  ./test.sh
+  - sudo ./test.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
