@@ -12,6 +12,7 @@ before_install:
 install:
 - go get gopkg.in/yaml.v2
 - "export GOPATH=$GOPATH:$HOME/gopath/src/github.com/Hamstak/rocketLog/"
+- pwd | echo
 
 script:
   - sudo ./test.sh
