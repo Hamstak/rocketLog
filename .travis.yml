@@ -9,7 +9,7 @@ os:
  - windows
 
 script:
-  - go test -v ./... -coverprofile=coverage.txt -covermode=atomic
+  - ./test.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
