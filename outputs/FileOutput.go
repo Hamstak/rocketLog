@@ -4,6 +4,7 @@ import (
 	"os"
 	"log"
 	"bufio"
+	
 	"github.com/hamstak/rocketlog/event"
 )
 
