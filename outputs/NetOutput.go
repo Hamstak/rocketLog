@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"strings"
-	"rocketlog/events"
+	"github.com/hamstak/rocketlog/event"
 	"sync"
 )
 

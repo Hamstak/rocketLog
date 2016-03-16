@@ -4,11 +4,11 @@ import (
 	"testing"
 	"os"
 	"os/exec"
-	"rocketlog/events"
 	"time"
 	"net/http"
 	"log"
 	"errors"
+	"github.com/hamstak/rocketlog/event"
 )
 
 

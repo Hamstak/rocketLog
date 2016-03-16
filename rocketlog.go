@@ -2,17 +2,18 @@ package main
 
 import (
 	"flag"
-	"rocketlog/config"
 	"os"
 	"log"
-	"rocketlog/inputs"
-	"rocketlog/processors"
-	"rocketlog/outputs"
 	"os/signal"
 	"sync"
 	"runtime"
-	"rocketlog/events"
 	"time"
+
+	"github.com/hamstak/rocketlog/config"
+	"github.com/hamstak/rocketlog/inputs"
+	"github.com/hamstak/rocketlog/processors"
+	"github.com/hamstak/rocketlog/outputs"
+	"github.com/hamstak/rocketlog/event"
 )
 
 var verbose bool
