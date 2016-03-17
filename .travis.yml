@@ -12,7 +12,11 @@ before_install:
  - go get gopkg.in/yaml.v2
 
 install:
-- export GOPATH=$GOPATH:$HOME/gopath/
+ - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
+ - export PATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace/bin:$PATH"
+
+before_script:
+ - go vet ./...
 
 script:
  - ./test.sh
