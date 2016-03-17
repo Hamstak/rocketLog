@@ -12,7 +12,7 @@ before_install:
  - go get gopkg.in/yaml.v2
 
 install:
-- "export GOPATH=$GOPATH:$HOME/gopath/"
+- export GOPATH=$GOPATH:$HOME/gopath/
 
 script:
  - ./test.sh
