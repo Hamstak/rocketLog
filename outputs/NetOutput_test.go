@@ -43,6 +43,11 @@ func stopElasticSearch(t *testing.T){
 
 
 func Test_NetOuput_Write(t *testing.T) {
+	if(testing.Short()){
+		t.Skip("Skipping NetOutput_Write (elsaticsearch) test")
+	}
+
+
 	err := startElasticSearch(t)
 	if(err != nil){
 		log.Print(err)
