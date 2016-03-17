@@ -2,9 +2,6 @@ package event
 
 import (
 	"strings"
-	//"fmt"
-	//"encoding/json"
-	//"encoding/xml"
 )
 
 const RAW = "RAW"

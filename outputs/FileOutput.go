@@ -4,7 +4,8 @@ import (
 	"os"
 	"log"
 	"bufio"
-	"rocketlog/events"
+	
+	"github.com/hamstak/rocketlog/event"
 )
 
 type FileOutput struct {

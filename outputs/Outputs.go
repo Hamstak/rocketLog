@@ -1,6 +1,6 @@
 package outputs
 
-import "rocketlog/events"
+import "github.com/hamstak/rocketlog/event"
 
 type Output interface {
 	Write(data *event.Event)

@@ -2,16 +2,21 @@ package main
 
 import (
 	"flag"
-	"rocketlog/config"
 	"os"
 	"log"
-	"rocketlog/inputs"
-	"rocketlog/processors"
-	"rocketlog/outputs"
+	"os/signal"
+	"sync"
+	"runtime"
+	"time"
+
+	"github.com/hamstak/rocketlog/config"
+	"github.com/hamstak/rocketlog/inputs"
+	"github.com/hamstak/rocketlog/processors"
+	"github.com/hamstak/rocketlog/outputs"
+	"github.com/hamstak/rocketlog/event"
 )
 
 var verbose bool
-var config_yml config.Configuration
 
 func vlog(args ...interface{}){
 	if(verbose){
@@ -55,10 +60,10 @@ func vlog_config(config_struct *config.Configuration){
 }
 
 func populate_rocket_instances(
-	config_struct *config.Configuration,
-	rocket_inputs []inputs.Input,
-	rocket_processors []processors.Processor,
-	rocket_outputs []outputs.Output){
+config_struct *config.Configuration,
+rocket_inputs []inputs.Input,
+rocket_processors []processors.Processor,
+rocket_outputs []outputs.Output){
 
 	for i, input_instance := range config_struct.Input.File {
 		rocket_inputs[i] = inputs.NewFileInput(input_instance.File, "state.json", input_instance.Type)
@@ -88,6 +93,33 @@ func destroy_rocket_instances(rocket_inputs []inputs.Input, rocket_outputs []out
 	}
 }
 
+func handle_interrupt(cb func()){
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+
+	go func() {
+		for _ = range signalChan {
+			log.Print("\nReceived an interrupt, stopping services...\n")
+			cb()
+		}
+	}()
+}
+
+func consume_event(event *event.Event, rocket_processors []processors.Processor, rocket_outputs []outputs.Output){
+	for _, processor := range rocket_processors {
+		if(processor.Matches(event.Data)){
+			event.Data = processor.Process(event.Data)
+			output_event(event, rocket_outputs)
+		}
+	}
+}
+
+func output_event(event *event.Event, rocket_outputs []outputs.Output){
+	for _, output := range rocket_outputs {
+		output.Write(event)
+	}
+}
+
 func main(){
 	var config_path string
 	flag.StringVar(&config_path, "config", "./configuration.yml", "The configuration file")
@@ -110,7 +142,35 @@ func main(){
 	rocket_outputs := make([]outputs.Output, len(config_struct.Output.File) + len(config_struct.Output.Webservice))
 	populate_rocket_instances(config_struct, rocket_inputs, rocket_processors, rocket_outputs)
 
+	lock := sync.Mutex{}
 
-	vlog("Destroying Rocket_Instances")
-	destroy_rocket_instances(rocket_inputs, rocket_outputs)
+	handle_interrupt(func(){
+		log.Print("Destroying Rocket_Instances")
+		destroy_rocket_instances(rocket_inputs, rocket_outputs)
+		lock.Lock()
+		os.Exit(0)
+		lock.Unlock()
+	})
+
+	for {
+		lock.Lock()
+
+		vlog("working")
+		log.Print("Sleeping")
+
+		for i, input := range rocket_inputs {
+			line, err := input.ReadLine()
+			if(err != nil){
+				vlog("Reached end of input ", i)
+				input.Flush()
+				time.Sleep(time.Second * 1)
+			} else {
+				e := event.NewEvent(line, "rocket_input", input.GetType())
+				consume_event(e, rocket_processors, rocket_outputs)
+			}
+		}
+
+		lock.Unlock()
+		runtime.Gosched()
+	}
 }
