@@ -1,28 +1,19 @@
 language: go
-
-sudo: false
-
 go:
- - 1.6
-
-os:
- - linux
- - osx
- - windows
+- 1.6
 
 before_install:
- - go get github.com/onsi/gomega
- - go get github.com/onsi/ginkgo
- - go get golang.org/x/tools/cmd/cover
- - go get gopkg.in/yaml.v2
-
-script:
- - go get
- - ./test.sh
+  - go get github.com/onsi/gomega
+  - go get github.com/onsi/ginkgo
+  - go get golang.org/x/tools/cmd/cover
 
 install:
- - go get gopkg.in/yaml.v2
+- go get gopkg.in/yaml.v2
+- "export GOPATH=$GOPATH:$HOME/gopath/src/github.com/Hamstak/rocketLog/"
+
+script:
+  - ./test.sh
 
 after_success:
- - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 
