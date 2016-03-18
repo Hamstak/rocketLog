@@ -12,12 +12,13 @@ import (
 type FileInputStream struct {
 	reader             *bufio.Reader
 	absolute_file_path string
+	etype              string
 	file               *os.File
 	line_number        int
 	state              *FileState
 }
 
-func NewFileInputStream(path string, state *FileState) *FileInputStream{
+func NewFileInputStream(path, etype string, state *FileState) *FileInputStream{
 	absolute_file_path, err := filepath.Abs(path)
 	if(err != nil){
 		log.Fatal(err)
@@ -35,11 +36,16 @@ func NewFileInputStream(path string, state *FileState) *FileInputStream{
 		reader: reader,
 		absolute_file_path: absolute_file_path,
 		state:state,
+		etype:etype,
 	}
 
 	file_input_stream.skip()
 
 	return file_input_stream
+}
+
+func (self *FileInputStream) GetType() string {
+	return self.etype
 }
 
 func (self *FileInputStream) ReadByte() (byte, error) {
@@ -66,7 +72,7 @@ func (self *FileInputStream) skip_to_line(line_number int){
 	}
 }
 
-func (self *FileInputStream) ReadLine() string{
+func (self *FileInputStream) ReadLine() (string, error) {
 	// Buffer related numbers
 	buffer_len := 1024
 	buffer := make([]byte, buffer_len)
@@ -105,7 +111,7 @@ func (self *FileInputStream) ReadLine() string{
 		}
 	}
 
-	return string(buffer[0:buffer_index])
+	return string(buffer[0:buffer_index]), nil
 }
 
 func (self *FileInputStream) save_state(){

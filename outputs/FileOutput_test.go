@@ -12,7 +12,7 @@ func Test_FileOuput_FileWrite(t *testing.T) {
 
 	output = NewFileOutput(file_name)
 
-	event := event.NewEvent("Hello World!","Test-Producer", "Test-Index")
+	event := event.NewEvent("Hello World!", "Test-Index")
 	output.Write(event)
 
 	output.Close()

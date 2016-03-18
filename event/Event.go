@@ -10,12 +10,11 @@ const XML = "XML"
 
 type Event struct{
 	Data     string
-	Producer string
 	DataType string
 	Index    string
 }
 
-func NewEvent(payload, producer, index string) *Event{
+func NewEvent(payload, index string) *Event{
 	trimmed := strings.Trim(payload, " \t\n")
 	dataType := RAW
 
@@ -27,7 +26,6 @@ func NewEvent(payload, producer, index string) *Event{
 
 	return &Event{
 		Data: payload,
-		Producer: producer,
 		DataType: dataType,
 		Index: index,
 	}

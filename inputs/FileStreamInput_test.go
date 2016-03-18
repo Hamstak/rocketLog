@@ -29,13 +29,13 @@ func Test_FileInputStream_ReadLine(t *testing.T) {
 
 	file.WriteString("Line 1\n")
 
-	fis := NewFileInputStream(STREAM_FILE, NewFileState(STATE_FILE))
+	fis := NewFileInputStream(STREAM_FILE, "test", NewFileState(STATE_FILE))
 
-	line1 := fis.ReadLine()
+	line1, _ := fis.ReadLine()
 	assertSame("Line 1", line1, t)
 
 	file.WriteString("Line 2\n")
-	line2 := fis.ReadLine()
+	line2, _ := fis.ReadLine()
 	assertSame("Line 2", line2, t)
 
 	fis.Close()
@@ -50,9 +50,9 @@ func Test_FileInputStream_ReadLine_AsyncWait(t *testing.T){
 
 	file.WriteString("Line 1\n")
 
-	fis := NewFileInputStream(STREAM_FILE, NewFileState(STATE_FILE))
+	fis := NewFileInputStream(STREAM_FILE, "test", NewFileState(STATE_FILE))
 
-	line1 := fis.ReadLine()
+	line1, _ := fis.ReadLine()
 	assertSame("Line 1", line1, t)
 
 	go func(){
@@ -60,7 +60,7 @@ func Test_FileInputStream_ReadLine_AsyncWait(t *testing.T){
 		file.WriteString("Line 2\n")
 	}()
 
-	line2 := fis.ReadLine()
+	line2, _ := fis.ReadLine()
 	assertSame("Line 2", line2, t)
 
 	fis.Close()
@@ -77,13 +77,13 @@ func Test_FileInputStream_ReadLine_Skip(t *testing.T){
 	file.WriteString("Line 1\n")
 	file.WriteString("Line 2\n")
 
-	file_input_stream_1 := NewFileInputStream(STREAM_FILE, NewFileState(STATE_FILE))
-	line1 := file_input_stream_1.ReadLine()
+	file_input_stream_1 := NewFileInputStream(STREAM_FILE, "test", NewFileState(STATE_FILE))
+	line1, _ := file_input_stream_1.ReadLine()
 	assertSame("Line 1", line1, t)
 	file_input_stream_1.Close()
 
-	file_input_stream_2 := NewFileInputStream(STREAM_FILE, NewFileState(STATE_FILE))
-	line2 := file_input_stream_2.ReadLine()
+	file_input_stream_2 := NewFileInputStream(STREAM_FILE, "test", NewFileState(STATE_FILE))
+	line2, _ := file_input_stream_2.ReadLine()
 	assertSame("Line 2", line2, t)
 	file_input_stream_2.Close()
 }

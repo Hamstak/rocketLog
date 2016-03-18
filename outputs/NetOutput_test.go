@@ -58,7 +58,7 @@ func Test_NetOuput_Write(t *testing.T) {
 
 	var output Output
 	output = NewNetOutput("http://elasticsearch:9200")
-	output.Write(event.NewEvent("{ \"Foo\":\"Bar\" }", "TEST", "test-index"))
+	output.Write(event.NewEvent("{ \"Foo\":\"Bar\" }", "test-index"))
 	output.Close()
 
 	stopElasticSearch(t)
