@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/Hamstak/rocketlog.svg?branch=master)](https://travis-ci.org/Hamstak/rocketlog)
-[![codecov.io](https://codecov.io/github/Hamstak/rocketlog/coverage.svg?branch=master)](https://codecov.io/github/Hamstak/rocketlog?branch=master)
+[![Build Status](https://travis-ci.org/hamstak/rocketlog.svg?branch=master)](https://travis-ci.org/hamstak/rocketlog)
+[![codecov.io](https://codecov.io/github/hamstak/rocketlog/coverage.svg?branch=master)](https://codecov.io/github/hamstak/rocketlog?branch=master)
 
-# rocketLog
+# rocketlog
 Open source tool for collectivizing, storing and parsing logs.
