@@ -38,7 +38,6 @@ func (self *RegexProcessor) Matches(input string) bool {
 }
 
 func (self *RegexProcessor) Process(input string) string {
-
 	result := self.regex.FindStringSubmatch(input)
 	mapping_result := self.mapping_regex.FindAllStringSubmatch(self.mapping, -1)
 	shell_result := self.shell_regex.FindAllStringSubmatch(self.mapping, -1)
@@ -58,7 +57,7 @@ func (self *RegexProcessor) Process(input string) string {
 	}
 
 	for _, v:= range shell_result{
-		current_mapping_token := v[0]
+		current_mapping_token := v[1]
 		cmd_slices := strings.Split(v[2], " ")
 
 		byte_stream, err := exec.Command(cmd_slices[0], cmd_slices[1:]...).Output()
@@ -66,6 +65,8 @@ func (self *RegexProcessor) Process(input string) string {
 			log.Fatal(err)
 		}
 		current_result_token := strings.Trim(string(byte_stream), "\n")
+
+
 		output = strings.Replace(output, current_mapping_token, current_result_token, -1)
 	}
 
