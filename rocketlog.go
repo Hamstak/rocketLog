@@ -125,10 +125,10 @@ func produceEventForInput(output chan *event.Event, input inputs.Input) {
 
 		e := event.NewEvent(line, input.GetType())
 		output <- e
-        
-        if(verbose){
-            
-        }
+
+		if verbose {
+
+		}
 	}
 }
 

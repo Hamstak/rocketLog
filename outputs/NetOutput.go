@@ -1,27 +1,27 @@
 package outputs
 
 import (
-	"net/http"
-	"log"
 	"encoding/json"
-	"io/ioutil"
-	"strings"
 	"github.com/hamstak/rocketlog/event"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strings"
 	"sync"
 )
 
-type NetOutput struct{
+type NetOutput struct {
 	hostname string
-	client http.Client
-	lock sync.Mutex
+	client   http.Client
+	lock     sync.Mutex
 }
 
 const ELASTIC_INDEX = "rocketlog"
 
-func NewNetOutput(hostname string) *NetOutput{
+func NewNetOutput(hostname string) *NetOutput {
 	net_output := &NetOutput{
 		hostname: hostname,
-		client: http.Client{},
+		client:   http.Client{},
 	}
 
 	return net_output
@@ -31,12 +31,12 @@ func (self *NetOutput) getEndpoint(event *event.Event) string {
 	return self.hostname + "/" + ELASTIC_INDEX + "/" + event.Index + "/"
 }
 
-func isValidJSON(payload string) bool{
+func isValidJSON(payload string) bool {
 	var payload_intermediate map[string]interface{}
 
 	json.Unmarshal([]byte(payload), &payload_intermediate)
 	_, err := json.Marshal(payload_intermediate)
-	if(err != nil){
+	if err != nil {
 		return false
 	}
 
@@ -44,7 +44,7 @@ func isValidJSON(payload string) bool{
 }
 
 func (self *NetOutput) Write(event *event.Event) {
-	if(!isValidJSON(event.Data)){
+	if !isValidJSON(event.Data) {
 		log.Print("Couldn't Post Data For ", event)
 		return
 	}
@@ -57,16 +57,16 @@ func (self *NetOutput) Write(event *event.Event) {
 	method := http.MethodPost
 
 	request, err := http.NewRequest(method, endpoint, payload)
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 
 	response, err := self.client.Do(request)
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	if (response.StatusCode != http.StatusCreated){
+	if response.StatusCode != http.StatusCreated {
 		log.Print("Response Status Code == ", response.StatusCode)
 		log.Print("Response Headers: ", response.Header)
 		body, _ := ioutil.ReadAll(response.Body)
@@ -75,6 +75,6 @@ func (self *NetOutput) Write(event *event.Event) {
 	}
 }
 
-func (self *NetOutput) Close(){
+func (self *NetOutput) Close() {
 
 }

@@ -1,29 +1,29 @@
 package inputs
 
 import (
-	"testing"
-	"strings"
 	"os"
+	"strings"
+	"testing"
 	"time"
 )
 
 const STATE_FILE = "./testfiles/state.json"
 const STREAM_FILE = "testfiles/file-stream.txt"
 
-func truncate_state(){
+func truncate_state() {
 	os.Truncate(STATE_FILE, 0)
 }
 
-func assertSame(expected, actual string, t *testing.T){
-	if(strings.Compare(expected, actual) != 0){
+func assertSame(expected, actual string, t *testing.T) {
+	if strings.Compare(expected, actual) != 0 {
 		t.Errorf("Expected: <<%s>>, Actual: <<%s>>", expected, actual)
 	}
 }
 
 func Test_FileInputStream_ReadLine(t *testing.T) {
 	truncate_state()
-	file, err := os.OpenFile(STREAM_FILE, os.O_CREATE | os.O_RDWR | os.O_TRUNC, 0644)
-	if(err != nil){
+	file, err := os.OpenFile(STREAM_FILE, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+	if err != nil {
 		t.Fatal(err)
 	}
 
@@ -41,10 +41,10 @@ func Test_FileInputStream_ReadLine(t *testing.T) {
 	fis.Close()
 }
 
-func Test_FileInputStream_ReadLine_AsyncWait(t *testing.T){
+func Test_FileInputStream_ReadLine_AsyncWait(t *testing.T) {
 	truncate_state()
-	file, err := os.OpenFile(STREAM_FILE, os.O_CREATE | os.O_RDWR | os.O_TRUNC, 0644)
-	if(err != nil){
+	file, err := os.OpenFile(STREAM_FILE, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+	if err != nil {
 		t.Fatal(err)
 	}
 
@@ -55,7 +55,7 @@ func Test_FileInputStream_ReadLine_AsyncWait(t *testing.T){
 	line1, _ := fis.ReadLine()
 	assertSame("Line 1", line1, t)
 
-	go func(){
+	go func() {
 		time.Sleep(time.Second)
 		file.WriteString("Line 2\n")
 	}()
@@ -66,11 +66,10 @@ func Test_FileInputStream_ReadLine_AsyncWait(t *testing.T){
 	fis.Close()
 }
 
-
-func Test_FileInputStream_ReadLine_Skip(t *testing.T){
+func Test_FileInputStream_ReadLine_Skip(t *testing.T) {
 	truncate_state()
-	file, err := os.OpenFile(STREAM_FILE, os.O_CREATE | os.O_RDWR | os.O_TRUNC, 0644)
-	if(err != nil){
+	file, err := os.OpenFile(STREAM_FILE, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+	if err != nil {
 		t.Fatal(err)
 	}
 
