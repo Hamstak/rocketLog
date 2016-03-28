@@ -12,44 +12,46 @@ import (
 type FileInputStream struct {
 	reader           *bufio.Reader
 	absoluteFilePath string
+	relativeFilePath string
 	etype            string
 	file             *os.File
 	lineNumber       int
 	state            *FileState
 }
 
-func (fileInputStream *FileInputStream) GetInputName() string {
-	return "FileInputStream='" + fileInputStream.absoluteFilePath + "'"
+func (fileInputStream *FileInputStream) GetName() string {
+	return "FileInputStream='" + fileInputStream.relativeFilePath + "'"
 }
 
 func NewFileInputStream(path, etype string, state *FileState) *FileInputStream {
-	absolute_file_path, err := filepath.Abs(path)
+	absoluteFilePath, err := filepath.Abs(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	file, err := os.Open(absolute_file_path)
+	file, err := os.Open(absoluteFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	reader := bufio.NewReader(file)
 
-	file_input_stream := &FileInputStream{
+	fileInputStream := &FileInputStream{
 		file:             file,
 		reader:           reader,
-		absoluteFilePath: absolute_file_path,
+		absoluteFilePath: absoluteFilePath,
+		relativeFilePath: path,
 		state:            state,
 		etype:            etype,
 	}
 
-	file_input_stream.skip()
+	fileInputStream.skip()
 
-	return file_input_stream
+	return fileInputStream
 }
 
-func (self *FileInputStream) GetType() string {
-	return self.etype
+func (fileInputStream *FileInputStream) GetType() string {
+	return fileInputStream.etype
 }
 
 func (self *FileInputStream) ReadByte() (byte, error) {
@@ -78,20 +80,20 @@ func (self *FileInputStream) skip_to_line(line_number int) {
 
 func (self *FileInputStream) ReadLine() (string, error) {
 	// Buffer related numbers
-	buffer_len := 1024
-	buffer := make([]byte, buffer_len)
-	buffer_index := 0
+	bufferLen := 1024
+	buffer := make([]byte, bufferLen)
+	bufferIndex := 0
 
 	// Backoff related numbers
 	duration := time.Millisecond
 
-	for buffer_index = 0; buffer_index < buffer_len; buffer_index++ {
-		current_byte, err := self.ReadByte()
+	for bufferIndex = 0; bufferIndex <= bufferLen; bufferIndex++ {
+		currentByte, err := self.ReadByte()
 
 		if err != nil && err != io.EOF {
 			log.Fatal(err)
-		} else if err == io.EOF { // If EOF sleep and decrement buffer_index.
-			buffer_index--
+		} else if err == io.EOF { // If EOF sleep and decrement bufferIndex.
+			bufferIndex--
 			duration *= 2
 			time.Sleep(duration)
 		} else {
@@ -99,26 +101,27 @@ func (self *FileInputStream) ReadLine() (string, error) {
 				duration /= 2
 			}
 
-			if buffer_index == buffer_len {
-				newBuffer := make([]byte, buffer_len*2)
-				copy(newBuffer[0:buffer_len], buffer[:])
+			if bufferIndex == bufferLen {
+				newBuffer := make([]byte, bufferLen*2)
+				copy(newBuffer[0:bufferLen], buffer[:])
 				buffer = newBuffer
+				bufferLen *= 2
 			}
 
-			if current_byte == '\n' {
+			if currentByte == '\n' {
 				self.lineNumber++
-				self.save_state()
+				self.saveState()
 				break
 			}
 
-			buffer[buffer_index] = current_byte
+			buffer[bufferIndex] = currentByte
 		}
 	}
 
-	return string(buffer[0:buffer_index]), nil
+	return string(buffer[0:bufferIndex]), nil
 }
 
-func (self *FileInputStream) save_state() {
+func (self *FileInputStream) saveState() {
 	self.state.Save(self.absoluteFilePath, self.lineNumber)
 }
 
