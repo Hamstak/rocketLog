@@ -1,12 +1,12 @@
 package outputs
 
 import (
-	"testing"
 	"log"
 	"os"
+	"testing"
 )
 
-func TestMain(m *testing.M){
+func TestMain(m *testing.M) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	ret := m.Run()
 	os.Exit(ret)

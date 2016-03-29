@@ -14,7 +14,7 @@ func Test_FileState_SaveLoad(t *testing.T) {
 	file_state_2 := NewFileState("./testfiles/state.json")
 	actual := file_state_2.Load(file_name)
 
-	if(expected != actual){
+	if expected != actual {
 		t.Errorf("Expecting %d, Actuall %d", expected, actual)
 	}
 }

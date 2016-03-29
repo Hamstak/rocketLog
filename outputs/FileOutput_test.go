@@ -1,9 +1,9 @@
 package outputs
 
 import (
-	"testing"
-	"os"
 	"github.com/hamstak/rocketlog/event"
+	"os"
+	"testing"
 )
 
 func Test_FileOuput_FileWrite(t *testing.T) {

@@ -1,21 +1,21 @@
 package config
 
 import (
-	"testing"
 	"log"
 	"os"
 	"strings"
+	"testing"
 )
 
-func TestMain(m *testing.M){
+func TestMain(m *testing.M) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	ret := m.Run()
 	os.Exit(ret)
 }
 
-func Test_Configuration_Input(t *testing.T){
+func Test_Configuration_Input(t *testing.T) {
 	c, err := NewConfiguration("testfiles/config.yml")
-	if( err != nil){
+	if err != nil {
 		panic(err)
 	}
 
@@ -31,10 +31,9 @@ func Test_Configuration_Input(t *testing.T){
 	compare(expected, actual, t)
 }
 
-
-func Test_Configuration_Processing(t *testing.T){
+func Test_Configuration_Processing(t *testing.T) {
 	c, err := NewConfiguration("testfiles/config.yml")
-	if( err != nil){
+	if err != nil {
 		panic(err)
 	}
 
@@ -59,9 +58,9 @@ func Test_Configuration_Processing(t *testing.T){
 	compare(expected, actual, t)
 }
 
-func Test_Configuration_OutputGeneral(t *testing.T){
+func Test_Configuration_OutputGeneral(t *testing.T) {
 	c, err := NewConfiguration("testfiles/config.yml")
-	if( err != nil){
+	if err != nil {
 		panic(err)
 	}
 
@@ -88,8 +87,8 @@ func Test_Configuration_OutputGeneral(t *testing.T){
 	compare(expected, actual, t)
 }
 
-func compare(expected, actual string, t *testing.T){
-	if (strings.Compare(expected, actual) != 0){
+func compare(expected, actual string, t *testing.T) {
+	if strings.Compare(expected, actual) != 0 {
 		t.Error("Expected: <<", expected, ">> Actual <<", actual, ">>")
 	}
 }
