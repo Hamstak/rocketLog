@@ -3,13 +3,17 @@ go:
 - 1.6
 
 os:
- - linux
+- linux
+
+services:
+- elasticsearch
 
 before_install:
  - go get github.com/onsi/gomega
  - go get github.com/onsi/ginkgo
  - go get golang.org/x/tools/cmd/cover
  - go get gopkg.in/yaml.v2
+ - sleep 10
 
 install:
  - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
