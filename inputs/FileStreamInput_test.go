@@ -26,6 +26,13 @@ func assertSame(expected, actual string, t *testing.T) {
 
 func Test_FileInputStream_GetName(t *testing.T) {
 	truncateState()
+    
+    file, err := os.OpenFile(streamFile, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+    defer file.Close()
+    
     fis := NewFileInputStream(streamFile, "test", NewFileState(stateFile))
 	assertSame("FileInputStream='"+streamFile+"'", fis.GetName(), t)
 }
