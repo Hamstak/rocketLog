@@ -14,8 +14,8 @@ func truncateState() {
 	os.Truncate(stateFile, 0)
 }
 
-func truncateStreamFile(){
-    os.Truncate(streamFile, 0)
+func truncateStreamFile() {
+	os.Truncate(streamFile, 0)
 }
 
 func assertSame(expected, actual string, t *testing.T) {
@@ -26,45 +26,45 @@ func assertSame(expected, actual string, t *testing.T) {
 
 func Test_FileInputStream_GetName(t *testing.T) {
 	truncateState()
-    
-    file, err := os.OpenFile(streamFile, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+
+	file, err := os.OpenFile(streamFile, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
 	if err != nil {
 		t.Fatal(err)
 	}
-    defer file.Close()
-    
-    fis := NewFileInputStream(streamFile, "test", NewFileState(stateFile))
+	defer file.Close()
+
+	fis := NewFileInputStream(streamFile, "test", NewFileState(stateFile))
 	assertSame("FileInputStream='"+streamFile+"'", fis.GetName(), t)
 }
 
-func createReallocInput(t *testing.T){
-    file, err := os.OpenFile(streamFile, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
-    if err != nil {
-        t.Fatal(err)
-    }
-    
-    for i := 0; i < 1400; i++ {
-        file.WriteString("0")
-    }
-    
-    file.WriteString("\n")
-    
-    file.Close()    
+func createReallocInput(t *testing.T) {
+	file, err := os.OpenFile(streamFile, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i := 0; i < 1400; i++ {
+		file.WriteString("0")
+	}
+
+	file.WriteString("\n")
+
+	file.Close()
 }
 
-func Test_FileInputStream_Realloc(t *testing.T){
-    truncateState()
-    truncateStreamFile()
-    createReallocInput(t)
-    
-    fis := NewFileInputStream(streamFile, "test", NewFileState(stateFile))
-    defer fis.Close()
-    
-    line, _ := fis.ReadLine()
-   
-    if(len(line) < 1000){
-        t.Error("Line Too Short! ", line)
-    }
+func Test_FileInputStream_Realloc(t *testing.T) {
+	truncateState()
+	truncateStreamFile()
+	createReallocInput(t)
+
+	fis := NewFileInputStream(streamFile, "test", NewFileState(stateFile))
+	defer fis.Close()
+
+	line, _ := fis.ReadLine()
+
+	if len(line) < 1000 {
+		t.Error("Line Too Short! ", line)
+	}
 }
 
 func Test_FileInputStream_ReadLine(t *testing.T) {

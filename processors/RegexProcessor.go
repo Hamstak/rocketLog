@@ -8,65 +8,84 @@ import (
 	"strings"
 )
 
-const MAPPING_REGEX = "(\\(([0-9]*)\\))"
-const SHELL_REGEX = "(`(.*)`)"
+const mappingRegex = "(\\(([0-9]*)\\))"
+const shellRegex = "(`(.*)`)"
 
+
+// RegexProcessor holds necessary information for processing relavent data.
 type RegexProcessor struct {
 	regex         *regexp.Regexp
-	mapping_regex *regexp.Regexp
-	shell_regex   *regexp.Regexp
+	mappingRegex *regexp.Regexp
+	shellRegex   *regexp.Regexp
 	mapping       string
 }
 
-func NewRegexProcessor(parser_regex, mapping string) *RegexProcessor {
-	regex := regexp.MustCompile(parser_regex)
-	mapping_regex := regexp.MustCompile(MAPPING_REGEX)
-	shell_regex := regexp.MustCompile(SHELL_REGEX)
+/*NewRegexProcessor Constructor
+  @params: parserRegex, mapping
+  parserRegex: the parsing information for inputs from configuration file.
+  mapping: the parsing information for outputs from configuration file.
+  
+  returns new RegexProcessor struct containing compiled regex struct instances 
+*/
+func NewRegexProcessor(parserRegex, mapping string) *RegexProcessor {
+	regex := regexp.MustCompile(parserRegex)
+	mappingRegex := regexp.MustCompile(mappingRegex)
+	shellRegex := regexp.MustCompile(shellRegex)
 
 	reg := &RegexProcessor{
 		mapping:       mapping,
 		regex:         regex,
-		mapping_regex: mapping_regex,
-		shell_regex:   shell_regex,
+		mappingRegex:  mappingRegex,
+		shellRegex:    shellRegex,
 	}
 
 	return reg
 }
 
-func (self *RegexProcessor) Matches(input string) bool {
-	return self.regex.MatchString(input)
+/*Matches Simplification of regular expression matching function
+  @params: input
+  
+  returns input matched against the parsing regex in the RegexProcessor instance
+*/
+func (regexProcessor *RegexProcessor) Matches(input string) bool {
+	return regexProcessor.regex.MatchString(input)
 }
 
-func (self *RegexProcessor) Process(input string) string {
-	result := self.regex.FindStringSubmatch(input)
-	mapping_result := self.mapping_regex.FindAllStringSubmatch(self.mapping, -1)
-	shell_result := self.shell_regex.FindAllStringSubmatch(self.mapping, -1)
+/*Process Generations output for rocketlog
+  @params: input
+  
+  returns mapping regex with replaced data captured in groups in input in addition to captured commands captured by backticks
+*/
+func (regexProcessor *RegexProcessor) Process(input string) string {
+	result := regexProcessor.regex.FindStringSubmatch(input)
+	mappingResult := regexProcessor.mappingRegex.FindAllStringSubmatch(regexProcessor.mapping, -1)
+	shellResult := regexProcessor.shellRegex.FindAllStringSubmatch(regexProcessor.mapping, -1)
 
-	output := self.mapping
+	output := regexProcessor.mapping
 
-	for _, v := range mapping_result {
-		current_mapping_token := v[1]
-		result_index, err := strconv.Atoi(v[2])
+	for _, v := range mappingResult {
+		currentMappingToken := v[1]
+		resultIndex, err := strconv.Atoi(v[2])
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		current_result_token := result[result_index]
+		currentResultToken := result[resultIndex]
 
-		output = strings.Replace(output, current_mapping_token, current_result_token, -1)
+		output = strings.Replace(output, currentMappingToken, currentResultToken, -1)
 	}
 
-	for _, v := range shell_result {
-		current_mapping_token := v[1]
-		cmd_slices := strings.Split(v[2], " ")
+	for _, v := range shellResult {
+		currentMappingToken := v[1]
+		cmdSlices := strings.Split(v[2], " ")
 
-		byte_stream, err := exec.Command(cmd_slices[0], cmd_slices[1:]...).Output()
+		byteStream, err := exec.Command(cmdSlices[0], cmdSlices[1:]...).Output()
 		if err != nil {
 			log.Fatal(err)
 		}
-		current_result_token := strings.Trim(string(byte_stream), "\n")
+		currentResultToken := strings.Trim(string(byteStream), "\n")
 
-		output = strings.Replace(output, current_mapping_token, current_result_token, -1)
+		output = strings.Replace(output, currentMappingToken, currentResultToken, -1)
 	}
 
 	return output
