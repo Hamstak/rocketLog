@@ -21,8 +21,8 @@ func Test_RegexProcessor_Process(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	who_am_i := strings.Trim(string(output), "\n")
-	expected := "{ \"host\" : \"somerandomhost.com\", \"port\" : \"1234\", \"whoami\" : \"" + who_am_i + "\" }"
+	whoAmI := strings.Trim(string(output), "\n")
+	expected := "{ \"host\" : \"somerandomhost.com\", \"port\" : \"1234\", \"whoami\" : \"" + whoAmI + "\" }"
 	received := processor.Process("somerandomhost.com 1234 that isnt needed")
 
 	t.Log(received)
