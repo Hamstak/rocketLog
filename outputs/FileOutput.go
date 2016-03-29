@@ -7,14 +7,19 @@ import (
 	"os"
 )
 
+// FileOutput is an endpoint for rocketlog events that will write all the
+// events to a file. It is used for debugging purposes and is formatted
+// in a json-like format.
 type FileOutput struct {
-	file_name string
-	file      *os.File
-	writer    *bufio.Writer
+	fileName string
+	file     *os.File
+	writer   *bufio.Writer
 }
 
-func NewFileOutput(file_name string) *FileOutput {
-	file, err := os.OpenFile(file_name, os.O_RDWR|os.O_CREATE, 0666)
+// NewFileOutput is the constructor for the FileOutput object. It takes a
+// parameter for the path at which it should output to.
+func NewFileOutput(fileName string) *FileOutput {
+	file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0666)
 
 	if err != nil {
 		log.Fatal(err)
@@ -23,14 +28,15 @@ func NewFileOutput(file_name string) *FileOutput {
 	writer := bufio.NewWriter(file)
 
 	file_output := &FileOutput{
-		file_name: file_name,
-		file:      file,
-		writer:    writer,
+		fileName: fileName,
+		file:     file,
+		writer:   writer,
 	}
 
 	return file_output
 }
 
+// Write writes the event to a file (path specified in the constructor)
 func (self *FileOutput) Write(event *event.Event) {
 	line := event.Data
 
@@ -42,6 +48,7 @@ func (self *FileOutput) Write(event *event.Event) {
 	self.writer.Flush()
 }
 
+// Close closes the file descriptor
 func (self *FileOutput) Close() {
 	self.file.Close()
 }

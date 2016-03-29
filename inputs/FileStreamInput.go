@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// FileInputStream is a rocketlog input for reading from files.
 type FileInputStream struct {
 	reader           *bufio.Reader
 	absoluteFilePath string
@@ -19,10 +20,12 @@ type FileInputStream struct {
 	state            *FileState
 }
 
+// GetName returns the name for the FileInputStream
 func (fileInputStream *FileInputStream) GetName() string {
 	return "FileInputStream='" + fileInputStream.relativeFilePath + "'"
 }
 
+// NewFileInputStream is the constructor for the FileInputStream
 func NewFileInputStream(path, etype string, state *FileState) *FileInputStream {
 	absoluteFilePath, err := filepath.Abs(path)
 	if err != nil {
@@ -50,23 +53,25 @@ func NewFileInputStream(path, etype string, state *FileState) *FileInputStream {
 	return fileInputStream
 }
 
+// GetType returns the elasticsearch type that this input will produce events for.
 func (fileInputStream *FileInputStream) GetType() string {
 	return fileInputStream.etype
 }
 
-func (self *FileInputStream) ReadByte() (byte, error) {
-	return self.reader.ReadByte()
+// ReadByte reads a single byte from a file.
+func (fileInputStream *FileInputStream) ReadByte() (byte, error) {
+	return fileInputStream.reader.ReadByte()
 }
 
-func (self *FileInputStream) skip() {
-	target_line_number := self.state.Load(self.absoluteFilePath)
-	self.skip_to_line(target_line_number)
+func (fileInputStream *FileInputStream) skip() {
+	targetLineNumber := fileInputStream.state.Load(fileInputStream.absoluteFilePath)
+	fileInputStream.skipToLine(targetLineNumber)
 }
 
-func (self *FileInputStream) skip_to_line(line_number int) {
-	for ; self.lineNumber < line_number; self.lineNumber++ {
+func (fileInputStream *FileInputStream) skipToLine(lineNumber int) {
+	for ; fileInputStream.lineNumber < lineNumber; fileInputStream.lineNumber++ {
 		for {
-			byte, err := self.ReadByte()
+			byte, err := fileInputStream.ReadByte()
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -78,7 +83,10 @@ func (self *FileInputStream) skip_to_line(line_number int) {
 	}
 }
 
-func (self *FileInputStream) ReadLine() (string, error) {
+// ReadLine reads a line from the file. If it doesn't have
+func (fileInputStream *FileInputStream) ReadLine() (string, error) {
+	maxDuration := time.Second * 30
+
 	// Buffer related numbers
 	bufferLen := 1024
 	buffer := make([]byte, bufferLen)
@@ -88,13 +96,17 @@ func (self *FileInputStream) ReadLine() (string, error) {
 	duration := time.Millisecond
 
 	for bufferIndex = 0; bufferIndex <= bufferLen; bufferIndex++ {
-		currentByte, err := self.ReadByte()
+		currentByte, err := fileInputStream.ReadByte()
 
 		if err != nil && err != io.EOF {
 			log.Fatal(err)
 		} else if err == io.EOF { // If EOF sleep and decrement bufferIndex.
 			bufferIndex--
-			duration *= 2
+
+			if duration*2 < maxDuration {
+				duration *= 2
+			}
+
 			time.Sleep(duration)
 		} else {
 			if duration > 1 {
@@ -109,8 +121,8 @@ func (self *FileInputStream) ReadLine() (string, error) {
 			}
 
 			if currentByte == '\n' {
-				self.lineNumber++
-				self.saveState()
+				fileInputStream.lineNumber++
+				fileInputStream.saveState()
 				break
 			}
 
@@ -121,10 +133,11 @@ func (self *FileInputStream) ReadLine() (string, error) {
 	return string(buffer[0:bufferIndex]), nil
 }
 
-func (self *FileInputStream) saveState() {
-	self.state.Save(self.absoluteFilePath, self.lineNumber)
+func (fileInputStream *FileInputStream) saveState() {
+	fileInputStream.state.Save(fileInputStream.absoluteFilePath, fileInputStream.lineNumber)
 }
 
-func (self *FileInputStream) Close() {
-	self.file.Close()
+// Close closes the file descriptor
+func (fileInputStream *FileInputStream) Close() {
+	fileInputStream.file.Close()
 }
