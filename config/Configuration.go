@@ -1,12 +1,12 @@
 package config
 
 import (
+	"errors"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"errors"
 )
 
-type Configuration struct{
+type Configuration struct {
 	Input      InputInstance
 	Processing ProcessingInstance
 	Output     OutputInstance
@@ -17,7 +17,7 @@ type InputInstance struct {
 }
 
 type OutputInstance struct {
-	File []FileOutputInstance
+	File       []FileOutputInstance
 	Webservice []WebserviceInstance
 }
 
@@ -30,7 +30,7 @@ type FileOutputInstance struct {
 	File string
 }
 
-type WebserviceInstance struct  {
+type WebserviceInstance struct {
 	Url string
 }
 
@@ -39,22 +39,21 @@ type ProcessingInstance struct {
 }
 
 type RegexInstance struct {
-	Regex string
+	Regex   string
 	Mapping string
 }
 
-func NewConfiguration(fileName string) (*Configuration, error){
+func NewConfiguration(fileName string) (*Configuration, error) {
 	config := &Configuration{}
 	var err error
 
-
 	dat, err := ioutil.ReadFile(fileName)
-	if(err != nil){
+	if err != nil {
 		panic(err)
 	}
 
 	err = yaml.Unmarshal(dat, config)
-	if(err != nil){
+	if err != nil {
 		panic(err)
 	}
 
@@ -63,14 +62,14 @@ func NewConfiguration(fileName string) (*Configuration, error){
 	return config, err
 }
 
-func errorHandle(config *Configuration) error{
+func errorHandle(config *Configuration) error {
 	var err error
 	err = nil
-	if ((len(config.Input.File) == 0 ) && (len(config.Output.File) == 0 && len(config.Output.Webservice) == 0)){
+	if (len(config.Input.File) == 0) && (len(config.Output.File) == 0 && len(config.Output.Webservice) == 0) {
 		err = errors.New("No valid inputs or outputs detected in definition of configuration file")
-	}else if(len(config.Input.File) == 0){
+	} else if len(config.Input.File) == 0 {
 		err = errors.New("No valid inputs detected in definition of configuration file")
-	}else if(len(config.Output.File) == 0 && len(config.Output.Webservice) == 0){
+	} else if len(config.Output.File) == 0 && len(config.Output.Webservice) == 0 {
 		err = errors.New("No valid outpits detected in definition of configuration file")
 	}
 

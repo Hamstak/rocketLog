@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/hamstak/rocketlog/inputs"
-	"github.com/hamstak/rocketlog/processors"
-	"github.com/hamstak/rocketlog/outputs"
 	"github.com/hamstak/rocketlog/config"
+	"github.com/hamstak/rocketlog/inputs"
+	"github.com/hamstak/rocketlog/outputs"
+	"github.com/hamstak/rocketlog/processors"
 )
 
 type RocketInstance struct {
-	rocket_inputs []inputs.Input
+	rocket_inputs     []inputs.Input
 	rocket_processors []processors.Processor
-	rocket_outputs []outputs.Output
-	config_struct *config.Configuration
+	rocket_outputs    []outputs.Output
+	config_struct     *config.Configuration
 }
 
 func NewRocketInstance(config_struct *config.Configuration) *RocketInstance {
@@ -37,18 +37,18 @@ func NewRocketInstance(config_struct *config.Configuration) *RocketInstance {
 
 	offset := len(config_struct.Output.File)
 	for i, web_out_instance := range config_struct.Output.Webservice {
-		rocket_outputs[i + offset] = outputs.NewNetOutput(web_out_instance.Url)
+		rocket_outputs[i+offset] = outputs.NewNetOutput(web_out_instance.Url)
 	}
 
 	return &RocketInstance{
-		rocket_inputs:rocket_inputs,
-		rocket_processors:rocket_processors,
-		rocket_outputs:rocket_outputs,
-		config_struct: config_struct,
+		rocket_inputs:     rocket_inputs,
+		rocket_processors: rocket_processors,
+		rocket_outputs:    rocket_outputs,
+		config_struct:     config_struct,
 	}
 }
 
-func (self *RocketInstance) Close(){
+func (self *RocketInstance) Close() {
 	for _, output := range self.rocket_outputs {
 		output.Close()
 	}
@@ -57,4 +57,3 @@ func (self *RocketInstance) Close(){
 		input.Close()
 	}
 }
-

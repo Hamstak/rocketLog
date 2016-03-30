@@ -1,80 +1,85 @@
 package outputs
 
 import (
-	"net/http"
-	"log"
 	"encoding/json"
-	"io/ioutil"
-	"strings"
 	"github.com/hamstak/rocketlog/event"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strings"
 	"sync"
 )
 
-type NetOutput struct{
+// NetOutput writes objects to the elasticsearch api.
+type NetOutput struct {
 	hostname string
-	client http.Client
-	lock sync.Mutex
+	client   http.Client
+	lock     sync.Mutex
 }
 
-const ELASTIC_INDEX = "rocketlog"
+// ElasticIndex is the elastic search index in which all rocketlog events will be output to.
+const ElasticIndex = "rocketlog"
 
-func NewNetOutput(hostname string) *NetOutput{
-	net_output := &NetOutput{
+// NewNetOutput is the constructor for a NetOutput Object. Creates a NetOutput that connects to an instance of elasticsearch
+func NewNetOutput(hostname string) *NetOutput {
+	newOutput := &NetOutput{
 		hostname: hostname,
-		client: http.Client{},
+		client:   http.Client{},
 	}
 
-	return net_output
+	return newOutput
 }
 
-func (self *NetOutput) getEndpoint(event *event.Event) string {
-	return self.hostname + "/" + ELASTIC_INDEX + "/" + event.Index + "/"
+func (netOutput *NetOutput) getEndpoint(event *event.Event) string {
+	return netOutput.hostname + "/" + ElasticIndex + "/" + event.Index + "/"
 }
 
-func isValidJSON(payload string) bool{
-	var payload_intermediate map[string]interface{}
+func isValidJSON(payload string) bool {
+	var payloadIntermediate map[string]interface{}
 
-	json.Unmarshal([]byte(payload), &payload_intermediate)
-	_, err := json.Marshal(payload_intermediate)
-	if(err != nil){
+	json.Unmarshal([]byte(payload), &payloadIntermediate)
+	_, err := json.Marshal(payloadIntermediate)
+	if err != nil {
 		return false
 	}
 
 	return true
 }
 
-func (self *NetOutput) Write(event *event.Event) {
-	if(!isValidJSON(event.Data)){
+// Write Writes the event to elasticsearch
+func (netOutput *NetOutput) Write(event *event.Event) {
+	if !isValidJSON(event.Data) {
 		log.Print("Couldn't Post Data For ", event)
 		return
 	}
 
-	self.lock.Lock()
-	defer self.lock.Unlock()
+	netOutput.lock.Lock()
+	defer netOutput.lock.Unlock()
 
 	payload := strings.NewReader(event.Data)
-	endpoint := self.getEndpoint(event)
+	endpoint := netOutput.getEndpoint(event)
 	method := http.MethodPost
 
 	request, err := http.NewRequest(method, endpoint, payload)
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	response, err := self.client.Do(request)
-	if (err != nil) {
+	response, err := netOutput.client.Do(request)
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	if (response.StatusCode != http.StatusCreated){
+	if response.StatusCode != http.StatusCreated {
 		log.Print("Response Status Code == ", response.StatusCode)
 		log.Print("Response Headers: ", response.Header)
 		body, _ := ioutil.ReadAll(response.Body)
 		log.Print("Response Body: ", string(body))
-		log.Fatal("Failed To Write To ", self)
+		log.Fatal("Failed To Write To ", netOutput)
 	}
 }
 
-func (self *NetOutput) Close(){
+// Closes the NetOutput object
+func (netOutput *NetOutput) Close() {
 
 }

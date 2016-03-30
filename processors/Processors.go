@@ -4,4 +4,3 @@ type Processor interface {
 	Process(string) string
 	Matches(string) bool
 }
-
