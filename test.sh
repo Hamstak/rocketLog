@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+docker-compose up -d
+
 set -e
 echo "" > coverage.txt
 
@@ -12,3 +14,5 @@ for d in $(find ./* -maxdepth 10 -type d); do
         fi
     fi
 done
+
+docker-compose down

@@ -3,3 +3,6 @@
 
 # rocketlog
 Open source tool for collectivizing, storing and parsing logs.
+
+## Running Tests
+To run the tests you will need add `elasticsearch` to the hostfile pointing to the ip address that your docker-machine is running on. 
