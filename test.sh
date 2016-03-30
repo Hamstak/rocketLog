@@ -15,4 +15,4 @@ for d in $(find ./* -maxdepth 10 -type d); do
     fi
 done
 
-docker-compose down
+docker-compose stop
