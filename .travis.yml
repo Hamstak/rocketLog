@@ -21,7 +21,6 @@ install:
 
 before_script:
  - go vet ./...
- - sleep 10
 
 script:
  - ./test.sh
