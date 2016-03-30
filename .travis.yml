@@ -5,11 +5,15 @@ go:
 os:
  - linux
 
+services:
+ - docker
+
 before_install:
  - go get github.com/onsi/gomega
  - go get github.com/onsi/ginkgo
  - go get golang.org/x/tools/cmd/cover
  - go get gopkg.in/yaml.v2
+ - docker pull elasticsearch
 
 install:
  - export GOPATH="${TRAVIS_BUILD_DIR}/Godeps/_workspace:$GOPATH"
