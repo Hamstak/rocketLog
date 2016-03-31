@@ -3,3 +3,6 @@ bin
 pkg
 rocketlog.iml
 coverage.txt
+profile.out
+.goxc.local.json
+esdata

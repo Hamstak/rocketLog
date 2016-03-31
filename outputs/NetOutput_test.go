@@ -5,14 +5,13 @@ import (
 	"github.com/hamstak/rocketlog/event"
 	"log"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 )
 
 func startElasticSearch(t *testing.T) error {
 	for i := 0; i < 30; i++ {
-		resp, err := http.Get("http://localhost:9200")
+		resp, err := http.Get("http://elasticsearch:9200")
 		if err == nil && resp.StatusCode == 200 {
 			return nil
 		}
@@ -36,9 +35,7 @@ func Test_NetOuput_Write(t *testing.T) {
 	}
 
 	var output Output
-	output = NewNetOutput("http://localhost:9200")
+	output = NewNetOutput("http://elasticsearch:9200")
 	output.Write(event.NewEvent("{ \"Foo\":\"Bar\" }", "test-index"))
 	output.Close()
-
-	os.RemoveAll("./testfiles/esdata")
 }
