@@ -2,6 +2,10 @@ language: go
 go:
 - 1.6
 
+addons:
+ hosts:
+  - elasticsearch
+
 os:
  - linux
 
