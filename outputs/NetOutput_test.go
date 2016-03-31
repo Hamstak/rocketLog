@@ -5,7 +5,6 @@ import (
 	"github.com/hamstak/rocketlog/event"
 	"log"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 )
