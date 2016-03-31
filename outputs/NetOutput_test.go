@@ -39,6 +39,4 @@ func Test_NetOuput_Write(t *testing.T) {
 	output = NewNetOutput("http://elasticsearch:9200")
 	output.Write(event.NewEvent("{ \"Foo\":\"Bar\" }", "test-index"))
 	output.Close()
-
-	os.RemoveAll("./testfiles/esdata")
 }
