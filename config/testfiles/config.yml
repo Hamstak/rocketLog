@@ -6,8 +6,10 @@ processing:
   regex:
   - regex: "^(this)*"
     mapping: "(1) thing"
+    name: "tester-1"
   - regex: "^(foo)*"
     mapping: "(1)(1)"
+    name: "tester-2"
 output:
   file:
   - file: "./output.txt"

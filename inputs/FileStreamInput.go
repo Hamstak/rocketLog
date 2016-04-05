@@ -20,9 +20,9 @@ type FileInputStream struct {
 	state            *FileState
 }
 
-// GetName returns the name for the FileInputStream
-func (fileInputStream *FileInputStream) GetName() string {
-	return "FileInputStream='" + fileInputStream.relativeFilePath + "'"
+// ToString returns the string representation of the fileInputStream
+func (fileInputStream *FileInputStream) ToString() string {
+	return "INPUT(Type: \"FileInputStream\", Source: \"" + fileInputStream.absoluteFilePath + "\", Type: \"" + fileInputStream.GetType() + "\")"
 }
 
 // NewFileInputStream is the constructor for the FileInputStream

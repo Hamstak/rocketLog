@@ -8,52 +8,52 @@ import (
 )
 
 type RocketInstance struct {
-	rocket_inputs     []inputs.Input
-	rocket_processors []processors.Processor
-	rocket_outputs    []outputs.Output
-	config_struct     *config.Configuration
+	Inputs     []inputs.Input
+	Processors []processors.Processor
+	Outputs    []outputs.Output
+	Config     *config.Configuration
 }
 
-func NewRocketInstance(config_struct *config.Configuration) *RocketInstance {
+func NewRocketInstance(configuration *config.Configuration) *RocketInstance {
 	// Create Rocket IOP Instances
-	rocket_inputs := make([]inputs.Input, len(config_struct.Input.File))
-	rocket_processors := make([]processors.Processor, len(config_struct.Processing.Regex))
-	rocket_outputs := make([]outputs.Output, len(config_struct.Output.File)+len(config_struct.Output.Webservice))
+	rocketInputs := make([]inputs.Input, len(configuration.Input.File))
+	rocketProcessors := make([]processors.Processor, len(configuration.Processing.Regex))
+	rocketOutputs := make([]outputs.Output, len(configuration.Output.File)+len(configuration.Output.Webservice))
 
 	file_state := inputs.NewFileState("state.json")
 
 	// Populate Rocket IOP Instances
-	for i, input_instance := range config_struct.Input.File {
-		rocket_inputs[i] = inputs.NewFileInputStream(input_instance.File, input_instance.Type, file_state)
+	for i, inputInstance := range configuration.Input.File {
+		rocketInputs[i] = inputs.NewFileInputStream(inputInstance.File, inputInstance.Type, file_state)
 	}
 
-	for i, regex_instance := range config_struct.Processing.Regex {
-		rocket_processors[i] = processors.NewRegexProcessor(regex_instance.Regex, regex_instance.Mapping)
+	for i, regexInstance := range configuration.Processing.Regex {
+		rocketProcessors[i] = processors.NewRegexProcessor(regexInstance.Name, regexInstance.Regex, regexInstance.Mapping)
 	}
 
-	for i, file_out_instance := range config_struct.Output.File {
-		rocket_outputs[i] = outputs.NewFileOutput(file_out_instance.File)
+	for i, fileOutputInstance := range configuration.Output.File {
+		rocketOutputs[i] = outputs.NewFileOutput(fileOutputInstance.File)
 	}
 
-	offset := len(config_struct.Output.File)
-	for i, web_out_instance := range config_struct.Output.Webservice {
-		rocket_outputs[i+offset] = outputs.NewNetOutput(web_out_instance.Url)
+	offset := len(configuration.Output.File)
+	for i, webOutputInstance := range configuration.Output.Webservice {
+		rocketOutputs[i+offset] = outputs.NewNetOutput(webOutputInstance.Url)
 	}
 
 	return &RocketInstance{
-		rocket_inputs:     rocket_inputs,
-		rocket_processors: rocket_processors,
-		rocket_outputs:    rocket_outputs,
-		config_struct:     config_struct,
+		Inputs:     rocketInputs,
+		Processors: rocketProcessors,
+		Outputs:    rocketOutputs,
+		Config:     configuration,
 	}
 }
 
 func (self *RocketInstance) Close() {
-	for _, output := range self.rocket_outputs {
+	for _, output := range self.Outputs {
 		output.Close()
 	}
 
-	for _, input := range self.rocket_inputs {
+	for _, input := range self.Inputs {
 		input.Close()
 	}
 }

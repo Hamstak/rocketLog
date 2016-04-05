@@ -18,6 +18,7 @@ type RegexProcessor struct {
 	mappingRegex *regexp.Regexp
 	shellRegex   *regexp.Regexp
 	mapping       string
+    name          string
 }
 
 /*NewRegexProcessor Constructor
@@ -27,7 +28,7 @@ type RegexProcessor struct {
   
   returns new RegexProcessor struct containing compiled regex struct instances 
 */
-func NewRegexProcessor(parserRegex, mapping string) *RegexProcessor {
+func NewRegexProcessor(name, parserRegex, mapping string) *RegexProcessor {
 	regex := regexp.MustCompile(parserRegex)
 	mappingRegex := regexp.MustCompile(mappingRegex)
 	shellRegex := regexp.MustCompile(shellRegex)
@@ -37,6 +38,7 @@ func NewRegexProcessor(parserRegex, mapping string) *RegexProcessor {
 		regex:         regex,
 		mappingRegex:  mappingRegex,
 		shellRegex:    shellRegex,
+        name:          name,
 	}
 
 	return reg
@@ -49,6 +51,11 @@ func NewRegexProcessor(parserRegex, mapping string) *RegexProcessor {
 */
 func (regexProcessor *RegexProcessor) Matches(input string) bool {
 	return regexProcessor.regex.MatchString(input)
+}
+
+// ToString returns the string representation of the processor.
+func (regexProcessor *RegexProcessor) ToString() string {
+    return "PROCESSOR(Type: \"Regex\", Name: \"" + regexProcessor.name + "\")"
 }
 
 /*Process Generations output for rocketlog

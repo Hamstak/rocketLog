@@ -41,6 +41,7 @@ type ProcessingInstance struct {
 type RegexInstance struct {
 	Regex   string
 	Mapping string
+    Name    string
 }
 
 func NewConfiguration(fileName string) (*Configuration, error) {
