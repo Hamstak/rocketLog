@@ -4,9 +4,9 @@ import (
 	"strings"
 )
 
-const RAW = "RAW"
-const JSON = "JSON"
-const XML = "XML"
+const Raw = "RAW"
+const Json = "JSON"
+const Xml = "XML"
 
 type Event struct {
 	Data     string
@@ -14,14 +14,18 @@ type Event struct {
 	Index    string
 }
 
+// NewEvent is the constructor for an Event. It takes a payload string, and an
+// index. The index corolates to the elasticsearch index.
 func NewEvent(payload, index string) *Event {
 	trimmed := strings.Trim(payload, " \t\n")
-	dataType := RAW
+	dataType := Raw
 
-	if strings.IndexByte("{[", trimmed[0]) != -1 && strings.IndexByte("}]", trimmed[len(trimmed)-1]) != -1 {
-		dataType = JSON
-	} else if trimmed[0] == '<' && trimmed[len(trimmed)-1] == '>' {
-		dataType = XML
+	if len(trimmed) >= 2 {
+		if strings.IndexByte("{[", trimmed[0]) != -1 && strings.IndexByte("}]", trimmed[len(trimmed)-1]) != -1 {
+			dataType = Json
+		} else if trimmed[0] == '<' && trimmed[len(trimmed)-1] == '>' {
+			dataType = Xml
+		}
 	}
 
 	return &Event{
@@ -30,4 +34,9 @@ func NewEvent(payload, index string) *Event {
 		Index:    index,
 	}
 
+}
+
+// ToString returns a logging friendly representation of the event (doesn't include payload)
+func (event *Event) ToString() string {
+	return "EVENT(Index: \"" + event.Index + "\", Type: \"" + event.DataType + "\")"
 }

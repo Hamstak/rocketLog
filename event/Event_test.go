@@ -14,21 +14,21 @@ func TestMain(m *testing.M) {
 
 func Test_NewEvent_XMLDetection(t *testing.T) {
 	e := NewEvent("<s></s>", "TEST")
-	if e.DataType != XML {
+	if e.DataType != Xml {
 		t.Error("Data Type Failure")
 	}
 }
 
 func Test_NewEvent_JSONDetection(t *testing.T) {
 	e := NewEvent("{}", "TEST")
-	if e.DataType != JSON {
+	if e.DataType != Json {
 		t.Error("Data Type Failure")
 	}
 }
 
 func Test_NewEvent_RAWDetection(t *testing.T) {
 	e := NewEvent("Some text", "TEST")
-	if e.DataType != RAW {
+	if e.DataType != Raw {
 		t.Error("Data Type Failure")
 	}
 }

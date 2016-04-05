@@ -15,54 +15,30 @@ import (
 var verbose bool
 var check bool
 
-func validateConfigPath(config_path string) {
-	_, err := os.Stat(config_path)
+func validateConfigPath(configPath string) {
+	_, err := os.Stat(configPath)
 	if err != nil {
-		log.Fatal("config_file: ", config_path, " not found")
+		log.Fatal("config_file: ", configPath, " not found")
 	}
 }
 
-func LoadConfiguration() *config.Configuration {
-	var config_path string
-	flag.StringVar(&config_path, "config", "./configuration.yml", "The configuration file")
+func loadConfiguration() *config.Configuration {
+	var configPath string
+	flag.StringVar(&configPath, "config", "./configuration.yml", "The configuration file")
 	flag.BoolVar(&verbose, "verbose", false, "print verbose output")
 	flag.BoolVar(&check, "check", false, "just check if the configuration is valid")
 	flag.Parse()
 
-	validateConfigPath(config_path)
+	validateConfigPath(configPath)
 
-	config_struct, err := config.NewConfiguration(config_path)
+	configStruct, err := config.NewConfiguration(configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return config_struct
+	return configStruct
 }
 
-func PrintConfiguration(config_struct *config.Configuration) {
-	for i, file := range config_struct.Input.File {
-		log.Println("File Input: ", i)
-		log.Println("\tFile:", file.File)
-		log.Println("\tType:", file.Type)
-	}
-
-	for i, regex := range config_struct.Processing.Regex {
-		log.Println("Regex Processor: ", i)
-		log.Println("\tRegex: ", regex.Regex)
-		log.Println("\tMapping: ", regex.Mapping)
-	}
-
-	for i, file := range config_struct.Output.File {
-		log.Println("File Output: ", i)
-		log.Println("\tFile:", file.File)
-	}
-
-	for i, web := range config_struct.Output.Webservice {
-		log.Println("Web Output: ", i)
-		log.Println("\tUrl: ", web.Url)
-	}
-}
-
-func handleCloseInterrupt(lock *sync.Mutex, rocket_instance *RocketInstance) {
+func handleCloseInterrupt(lock *sync.Mutex, rocketInstance *RocketInstance) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
 
@@ -71,48 +47,57 @@ func handleCloseInterrupt(lock *sync.Mutex, rocket_instance *RocketInstance) {
 			log.Print("\nReceived an interrupt, stopping services...\n")
 			log.Print("Destroying Rocket_Instances")
 			lock.Lock()
-			rocket_instance.Close()
+			rocketInstance.Close()
 			os.Exit(0)
 			lock.Unlock()
 		}
 	}()
 }
 
-func ModifyEvents(input, output chan *event.Event, rocket_instance *RocketInstance) {
+func modifyEvents(input, output chan *event.Event, rocketInstance *RocketInstance) {
 	for {
 		event := <-input
-		if modifyAnEvent(event, rocket_instance) {
+		if modifyASingleEvent(event, rocketInstance) {
 			output <- event
 		} else {
 			log.Print("Unmatched Event: ", event)
 		}
-
 	}
 }
 
-func modifyAnEvent(event *event.Event, rocket_instance *RocketInstance) bool {
-	for _, processor := range rocket_instance.rocket_processors {
+func modifyASingleEvent(event *event.Event, rocketInstance *RocketInstance) bool {
+	for _, processor := range rocketInstance.Processors {
 		if processor.Matches(event.Data) {
 			event.Data = processor.Process(event.Data)
-			return true
+		    if verbose {
+                logModifyEvent(event, processor)
+            }
+        	return true
 		}
 	}
 
 	return false
 }
 
-func ConsumeEvents(events chan *event.Event, rocket_instance *RocketInstance) {
+func consumeEvents(events chan *event.Event, rocketInstance *RocketInstance) {
 	for {
 		e := <-events
-		for _, output := range rocket_instance.rocket_outputs {
+		for _, output := range rocketInstance.Outputs {
 			output.Write(e)
+            if verbose {
+                logConsumeEvent(e, output)
+            }
 		}
 	}
 }
 
-func ProduceEvents(output chan *event.Event, rocket_instance *RocketInstance) {
-	for _, producer := range rocket_instance.rocket_inputs {
+func produceEvents(output chan *event.Event, rocketInstance *RocketInstance) {
+	for _, producer := range rocketInstance.Inputs {
 		go produceEventForInput(output, producer)
+        
+        if verbose {
+            logCreateProduceThread(producer)
+        }
 	}
 }
 
@@ -127,32 +112,32 @@ func produceEventForInput(output chan *event.Event, input inputs.Input) {
 		output <- e
 
 		if verbose {
-
+			logEnqueueEvent(e, input)
 		}
 	}
 }
 
 func main() {
-	config_struct := LoadConfiguration()
+	configStruct := loadConfiguration()
+
+	if verbose {
+		logConfiguration(configStruct)
+	}
 
 	if check {
 		log.Print("Configuration Loaded OK")
 		os.Exit(0)
 	}
 
-	if verbose {
-		PrintConfiguration(config_struct)
-	}
-
-	rocket_instance := NewRocketInstance(config_struct)
+	rocketInstance := NewRocketInstance(configStruct)
 	lock := &sync.Mutex{}
 
-	handleCloseInterrupt(lock, rocket_instance)
+	handleCloseInterrupt(lock, rocketInstance)
 
 	inputToModify := make(chan *event.Event, 1)
 	modifyToOutput := make(chan *event.Event, 1)
 
-	go ProduceEvents(inputToModify, rocket_instance)
-	go ModifyEvents(inputToModify, modifyToOutput, rocket_instance)
-	ConsumeEvents(modifyToOutput, rocket_instance)
+	go produceEvents(inputToModify, rocketInstance)
+	go modifyEvents(inputToModify, modifyToOutput, rocketInstance)
+	consumeEvents(modifyToOutput, rocketInstance)
 }

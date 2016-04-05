@@ -15,7 +15,7 @@ func TestMain(m *testing.M) {
 }
 
 func Test_RegexProcessor_Process(t *testing.T) {
-	processor := NewRegexProcessor("([a-zA-Z.]*) ([0-9]*)", "{ \"host\" : \"(1)\", \"port\" : \"(2)\", \"whoami\" : \"`whoami`\" }")
+	processor := NewRegexProcessor("test-processor","([a-zA-Z.]*) ([0-9]*)", "{ \"host\" : \"(1)\", \"port\" : \"(2)\", \"whoami\" : \"`whoami`\" }")
 	output, err := exec.Command("whoami").Output()
 	if err != nil {
 		log.Fatal(err)

@@ -52,3 +52,7 @@ func (self *FileOutput) Write(event *event.Event) {
 func (self *FileOutput) Close() {
 	self.file.Close()
 }
+
+func (fileOutput *FileOutput) ToString() string {
+    return "OUTPUT(Type: \"FileOutput\", File: \"" + fileOutput.fileName + "\")"
+}

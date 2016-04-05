@@ -30,6 +30,10 @@ func NewNetOutput(hostname string) *NetOutput {
 	return newOutput
 }
 
+func (netOutput *NetOutput) ToString() string {
+    return "OUTPUT( Type : NetOutput, URL : " + netOutput.hostname + " )"
+}
+
 func (netOutput *NetOutput) getEndpoint(event *event.Event) string {
 	return netOutput.hostname + "/" + ElasticIndex + "/" + event.Index + "/"
 }
