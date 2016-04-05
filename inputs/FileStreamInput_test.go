@@ -34,7 +34,7 @@ func Test_FileInputStream_GetName(t *testing.T) {
 	defer file.Close()
 
 	fis := NewFileInputStream(streamFile, "test", NewFileState(stateFile))
-	assertSame("INPUT( Type : FileInputStream, Source : /home/johnrowleyster/go/src/github.com/hamstak/rocketlog/inputs/testfiles/file-stream.txt, Type : test )", fis.ToString(), t)
+	assertSame("INPUT(Input: \"FileInputStream\", Source: \"/home/johnrowleyster/go/src/github.com/hamstak/rocketlog/inputs/testfiles/file-stream.txt\", Type: \"test\")", fis.ToString(), t)
 }
 
 func createReallocInput(t *testing.T) {

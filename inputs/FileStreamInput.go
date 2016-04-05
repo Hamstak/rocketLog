@@ -22,7 +22,7 @@ type FileInputStream struct {
 
 // ToString returns the string representation of the fileInputStream
 func (fileInputStream *FileInputStream) ToString() string {
-	return "INPUT(Type: \"FileInputStream\", Source: \"" + fileInputStream.absoluteFilePath + "\", Type: \"" + fileInputStream.GetType() + "\")"
+	return "INPUT(Input: \"FileInputStream\", Source: \"" + fileInputStream.absoluteFilePath + "\", Type: \"" + fileInputStream.GetType() + "\")"
 }
 
 // NewFileInputStream is the constructor for the FileInputStream
