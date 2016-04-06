@@ -3,7 +3,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/hamstak/rocketlog)](https://goreportcard.com/report/github.com/hamstak/rocketlog)
 
 # rocketlog
-Open source tool for collectivizing, storing and parsing logs.
+Open source tool for collecting, storing and parsing logs.
 
 ## Running Tests
 To run the tests you will need add `elasticsearch` to the hostfile pointing to the ip address that your docker-machine is running on. 
