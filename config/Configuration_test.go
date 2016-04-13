@@ -78,12 +78,12 @@ func Test_Configuration_OutputGeneral(t *testing.T) {
 
 	// Test first elastic output
 	expected = "http://127.0.0.1:9200"
-	actual = c.Output.Webservice[0].Url
+	actual = c.Output.Elasticsearch[0].Url
 	compare(expected, actual, t)
 
 	// Test second elastic output
 	expected = "http://127.0.0.1:9201"
-	actual = c.Output.Webservice[1].Url
+	actual = c.Output.Elasticsearch[1].Url
 	compare(expected, actual, t)
 }
 

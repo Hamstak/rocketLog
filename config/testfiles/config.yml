@@ -2,6 +2,10 @@ input:
   file:
   - file: "./input.txt"
     type: "input-file"
+  syslog-server:
+  - port: "5539"
+    protocol: "tcp"
+    type: "syslog-server"
 processing:
   regex:
   - regex: "^(this)*"
@@ -14,6 +18,6 @@ output:
   file:
   - file: "./output.txt"
   - file: "./output2.txt"
-  webservice:
+  elasticsearch:
   - url: "http://127.0.0.1:9200"
   - url: "http://127.0.0.1:9201"

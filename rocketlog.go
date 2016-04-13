@@ -38,7 +38,7 @@ func loadConfiguration() *config.Configuration {
 	return configStruct
 }
 
-func handleCloseInterrupt(lock *sync.Mutex, rocketInstance *RocketInstance) {
+func handleCloseInterrupt(lock *sync.Mutex, rocketInstance *config.RocketInstance) {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
 
@@ -54,7 +54,7 @@ func handleCloseInterrupt(lock *sync.Mutex, rocketInstance *RocketInstance) {
 	}()
 }
 
-func modifyEvents(input, output chan *event.Event, rocketInstance *RocketInstance) {
+func modifyEvents(input, output chan *event.Event, rocketInstance *config.RocketInstance) {
 	for {
 		event := <-input
 		if modifyASingleEvent(event, rocketInstance) {
@@ -65,7 +65,7 @@ func modifyEvents(input, output chan *event.Event, rocketInstance *RocketInstanc
 	}
 }
 
-func modifyASingleEvent(event *event.Event, rocketInstance *RocketInstance) bool {
+func modifyASingleEvent(event *event.Event, rocketInstance *config.RocketInstance) bool {
 	for _, processor := range rocketInstance.Processors {
 		if processor.Matches(event.Data) {
 			event.Data = processor.Process(event.Data)
@@ -79,7 +79,7 @@ func modifyASingleEvent(event *event.Event, rocketInstance *RocketInstance) bool
 	return false
 }
 
-func consumeEvents(events chan *event.Event, rocketInstance *RocketInstance) {
+func consumeEvents(events chan *event.Event, rocketInstance *config.RocketInstance) {
 	for {
 		e := <-events
 		for _, output := range rocketInstance.Outputs {
@@ -91,7 +91,7 @@ func consumeEvents(events chan *event.Event, rocketInstance *RocketInstance) {
 	}
 }
 
-func produceEvents(output chan *event.Event, rocketInstance *RocketInstance) {
+func produceEvents(output chan *event.Event, rocketInstance *config.RocketInstance) {
 	for _, producer := range rocketInstance.Inputs {
 		go produceEventForInput(output, producer)
         
@@ -129,7 +129,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	rocketInstance := NewRocketInstance(configStruct)
+	rocketInstance := configStruct.CreateInstance()
 	lock := &sync.Mutex{}
 
 	handleCloseInterrupt(lock, rocketInstance)

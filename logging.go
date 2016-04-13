@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-const modifyEventString  = "Modifing "
+const modifyEventString = "Modifing "
 const consumeEventString = "Consuming"
 const enqueueEventString = "Enqueing "
 
@@ -41,7 +41,7 @@ func logConfiguration(configStruct *config.Configuration) {
 		log.Println("Regex Processor: ", i)
 		log.Println("\tRegex: ", regex.Regex)
 		log.Println("\tMapping: ", regex.Mapping)
-        log.Println("\tName: ", regex.Name)
+		log.Println("\tName: ", regex.Name)
 	}
 
 	for i, file := range configStruct.Output.File {
@@ -49,7 +49,7 @@ func logConfiguration(configStruct *config.Configuration) {
 		log.Println("\tFile:", file.File)
 	}
 
-	for i, web := range configStruct.Output.Webservice {
+	for i, web := range configStruct.Output.Elasticsearch {
 		log.Println("Web Output: ", i)
 		log.Println("\tUrl: ", web.Url)
 	}
