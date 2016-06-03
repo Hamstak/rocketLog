@@ -1,0 +1,15 @@
+input:
+  file:
+  - file: "./input.txt"
+    type: "input-file"
+processing:
+  regex:
+  - regex: "^(alpha).*"
+    mapping: "FIRST ALPHA (1)"
+    name: "tester-1"
+  - regex: "^(beta).*"
+    mapping: "SECOND BETA (1)"
+    name: "tester-2"
+output:
+  file:
+  - file: "./output.txt"

@@ -2,12 +2,13 @@ package outputs
 
 import (
 	"encoding/json"
-	"github.com/hamstak/rocketlog/event"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 	"sync"
+
+	"github.com/hamstak/rocketlog/event"
 )
 
 // NetOutput writes objects to the elasticsearch api.
@@ -30,8 +31,9 @@ func NewNetOutput(hostname string) *NetOutput {
 	return newOutput
 }
 
+// ToString returns a human readable representation of the NetOutput
 func (netOutput *NetOutput) ToString() string {
-    return "OUTPUT( Type : NetOutput, URL : " + netOutput.hostname + " )"
+	return "OUTPUT( Type : NetOutput, URL : " + netOutput.hostname + " )"
 }
 
 func (netOutput *NetOutput) getEndpoint(event *event.Event) string {
@@ -62,7 +64,7 @@ func (netOutput *NetOutput) Write(event *event.Event) {
 
 	payload := strings.NewReader(event.Data)
 	endpoint := netOutput.getEndpoint(event)
-	method := http.MethodPost
+	method := "POST"
 
 	request, err := http.NewRequest(method, endpoint, payload)
 	if err != nil {
@@ -83,7 +85,7 @@ func (netOutput *NetOutput) Write(event *event.Event) {
 	}
 }
 
-// Closes the NetOutput object
+// Close closes the NetOutput object
 func (netOutput *NetOutput) Close() {
 
 }

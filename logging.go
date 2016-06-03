@@ -10,9 +10,13 @@ import (
 	"log"
 )
 
-const modifyEventString  = "Modifing "
+const modifyEventString = "Modifing "
 const consumeEventString = "Consuming"
 const enqueueEventString = "Enqueing "
+
+func logUnmodifiedEvent(e *event.Event) {
+
+}
 
 func logModifyEvent(e *event.Event, processor processors.Processor) {
 	log.Println(modifyEventString, e.ToString(), "By", processor.ToString())
@@ -41,7 +45,7 @@ func logConfiguration(configStruct *config.Configuration) {
 		log.Println("Regex Processor: ", i)
 		log.Println("\tRegex: ", regex.Regex)
 		log.Println("\tMapping: ", regex.Mapping)
-        log.Println("\tName: ", regex.Name)
+		log.Println("\tName: ", regex.Name)
 	}
 
 	for i, file := range configStruct.Output.File {

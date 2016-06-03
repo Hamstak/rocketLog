@@ -10,10 +10,22 @@ import (
 	"github.com/hamstak/rocketlog/config"
 	"github.com/hamstak/rocketlog/event"
 	"github.com/hamstak/rocketlog/inputs"
+
+	"net/http"
+
+	"github.com/go-kit/kit/metrics"
+	"github.com/go-kit/kit/metrics/expvar"
 )
 
 var verbose bool
 var check bool
+
+var producedEventsCounter metrics.Counter
+var consumedEventsCounter metrics.Counter
+var modifiedEventsCounter metrics.Counter
+var unmatchedEventsCounter metrics.Counter
+
+var counterMutex *sync.Mutex
 
 func validateConfigPath(configPath string) {
 	_, err := os.Stat(configPath)
@@ -57,36 +69,56 @@ func handleCloseInterrupt(lock *sync.Mutex, rocketInstance *RocketInstance) {
 func modifyEvents(input, output chan *event.Event, rocketInstance *RocketInstance) {
 	for {
 		event := <-input
-		if modifyASingleEvent(event, rocketInstance) {
-			output <- event
-		} else {
-			log.Print("Unmatched Event: ", event)
+
+		err := modifyASingleEvent(event, rocketInstance)
+		if err != nil {
+			incremementCounter(unmatchedEventsCounter, 1)
+			continue
 		}
+
+		incremementCounter(modifiedEventsCounter, 1)
+		output <- event
 	}
 }
 
-func modifyASingleEvent(event *event.Event, rocketInstance *RocketInstance) bool {
+func modifyASingleEvent(event *event.Event, rocketInstance *RocketInstance) error {
 	for _, processor := range rocketInstance.Processors {
 		if processor.Matches(event.Data) {
 			event.Data = processor.Process(event.Data)
-		    if verbose {
-                logModifyEvent(event, processor)
-            }
-        	return true
+			if verbose {
+				logModifyEvent(event, processor)
+			}
+			return nil
 		}
 	}
 
-	return false
+	logUnmatchedEvent(event)
+	return newNotMatchedError(event)
+}
+
+type notMatched struct {
+	Event *event.Event
+}
+
+func (error *notMatched) Error() string {
+	return "Couldn't find a match for " + error.Event.ToString()
+}
+
+func newNotMatchedError(event *event.Event) *notMatched {
+	return &notMatched{
+		Event: event,
+	}
 }
 
 func consumeEvents(events chan *event.Event, rocketInstance *RocketInstance) {
 	for {
 		e := <-events
+		incremementCounter(consumedEventsCounter, 1)
 		for _, output := range rocketInstance.Outputs {
 			output.Write(e)
-            if verbose {
-                logConsumeEvent(e, output)
-            }
+			if verbose {
+				logConsumeEvent(e, output)
+			}
 		}
 	}
 }
@@ -94,10 +126,10 @@ func consumeEvents(events chan *event.Event, rocketInstance *RocketInstance) {
 func produceEvents(output chan *event.Event, rocketInstance *RocketInstance) {
 	for _, producer := range rocketInstance.Inputs {
 		go produceEventForInput(output, producer)
-        
-        if verbose {
-            logCreateProduceThread(producer)
-        }
+
+		if verbose {
+			logCreateProduceThread(producer)
+		}
 	}
 }
 
@@ -111,14 +143,29 @@ func produceEventForInput(output chan *event.Event, input inputs.Input) {
 		e := event.NewEvent(line, input.GetType())
 		output <- e
 
+		incremementCounter(producedEventsCounter, 1)
+
 		if verbose {
 			logEnqueueEvent(e, input)
 		}
 	}
 }
 
+func incremementCounter(counter metrics.Counter, number uint64) {
+	counterMutex.Lock()
+	counter.Add(number)
+	counterMutex.Unlock()
+}
+
 func main() {
 	configStruct := loadConfiguration()
+
+	producedEventsCounter = expvar.NewCounter("produced_events")
+	consumedEventsCounter = expvar.NewCounter("consumed_events")
+	modifiedEventsCounter = expvar.NewCounter("modified_events")
+	unmatchedEventsCounter = expvar.NewCounter("unmatched_events")
+
+	counterMutex = &sync.Mutex{}
 
 	if verbose {
 		logConfiguration(configStruct)
@@ -139,5 +186,7 @@ func main() {
 
 	go produceEvents(inputToModify, rocketInstance)
 	go modifyEvents(inputToModify, modifyToOutput, rocketInstance)
-	consumeEvents(modifyToOutput, rocketInstance)
+	go consumeEvents(modifyToOutput, rocketInstance)
+
+	http.ListenAndServe(":1234", nil)
 }
